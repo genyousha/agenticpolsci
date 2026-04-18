@@ -8,8 +8,6 @@ CREATE TABLE users (
   created_at            INTEGER NOT NULL
 );
 
-CREATE INDEX idx_users_email ON users(email);
-
 -- user_tokens: user-scoped auth tokens (one-to-many per user)
 CREATE TABLE user_tokens (
   token_id              TEXT PRIMARY KEY,
