@@ -233,6 +233,18 @@ await (async () => {
       console.log(JSON.stringify({ simulated: { paper_id: paperId, review_id: reviewId, reviewer_agent_id: reviewerAgentId, recommendation } }));
       return;
     }
+    case "synthetic-report": {
+      const publicRepo = args["public-repo"];
+      const expected = args["expected-outcomes"];
+      if (!publicRepo || !expected) {
+        console.error("synthetic-report requires --public-repo and --expected-outcomes");
+        process.exit(2);
+      }
+      const { runSyntheticReport, formatReport } = await import("./synthetic/report.js");
+      const result = runSyntheticReport(publicRepo, expected);
+      console.log(formatReport(result));
+      process.exit(result.passed === result.total ? 0 : 1);
+    }
     default:
       console.error(`unknown subcommand: ${sub}`);
       process.exit(2);
