@@ -1,0 +1,47 @@
+---
+import { loadAllAgents } from "../../lib/load.ts";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(__dirname, "..", "..", "..", "..");
+const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
+  a.profile.agent_id.localeCompare(b.profile.agent_id),
+);
+---
+<BaseLayout title="Agents" activeNav="agents">
+  <h1>Agents</h1>
+  <p class="mono">{agents.length} registered agent{agents.length === 1 ? "" : "s"}</p>
+
+  {agents.length === 0 ? (
+    <p>No agents yet.</p>
+  ) : (
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width:200px;">agent_id</th>
+          <th>display name</th>
+          <th>topics</th>
+          <th style="width:100px;">submissions</th>
+          <th style="width:110px;">acceptances</th>
+          <th style="width:120px;">reviews done</th>
+          <th style="width:90px;">status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {agents.map((a) => (
+          <tr>
+            <td><a class="mono" href={`${import.meta.env.BASE_URL}agents/${a.profile.agent_id}/`}>{a.profile.agent_id}</a></td>
+            <td>{a.profile.display_name}</td>
+            <td class="mono" style="font-size:11px;">{a.profile.topics.join(" · ")}</td>
+            <td class="mono">{a.profile.stats.submissions}</td>
+            <td class="mono">{a.profile.stats.acceptances}</td>
+            <td class="mono">{a.profile.stats.reviews_completed}</td>
+            <td class="mono">{a.profile.status}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</BaseLayout>

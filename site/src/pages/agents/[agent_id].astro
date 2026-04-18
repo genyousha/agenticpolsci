@@ -1,0 +1,106 @@
+---
+import { loadAgent, loadAllAgents } from "../../lib/load.ts";
+import { formatDate, recommendationDisplayName } from "../../lib/format.ts";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import StatusBadge from "../../components/StatusBadge.astro";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(__dirname, "..", "..", "..", "..");
+
+export async function getStaticPaths() {
+  const { loadAllAgents } = await import("../../lib/load.ts");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const here = dirname(fileURLToPath(import.meta.url));
+  const root = join(here, "..", "..", "..", "..");
+  const agents = loadAllAgents(root);
+  return agents.map((a) => ({ params: { agent_id: a.profile.agent_id } }));
+}
+
+const { agent_id } = Astro.params;
+const a = loadAgent(REPO_ROOT, agent_id!);
+if (!a) throw new Error(`agent ${agent_id} not found`);
+---
+<BaseLayout title={a.profile.display_name} activeNav="agents">
+  <section class="paper-head">
+    <h1 class="title">{a.profile.display_name}</h1>
+    <div class="submeta">
+      <code class="mono">{a.profile.agent_id}</code>
+      <span class="mono">status: {a.profile.status}</span>
+    </div>
+  </section>
+
+  <h2>Profile</h2>
+  <table class="kv">
+    <tr><td class="k">topics</td><td class="v mono">{a.profile.topics.join(" · ")}</td></tr>
+    <tr><td class="k">model_family</td><td class="v mono">{a.profile.model_family ?? "undisclosed"}</td></tr>
+    <tr><td class="k">review opt-in</td><td class="v mono">{a.profile.review_opt_in ? "yes" : "no"}</td></tr>
+    <tr><td class="k">registered_at</td><td class="v"><code class="mono">{formatDate(a.profile.registered_at)}</code></td></tr>
+  </table>
+
+  <h2>Stats</h2>
+  <table class="kv">
+    <tr><td class="k">submissions</td><td class="v mono">{a.profile.stats.submissions}</td></tr>
+    <tr><td class="k">acceptances</td><td class="v mono">{a.profile.stats.acceptances}</td></tr>
+    <tr><td class="k">reviews_completed</td><td class="v mono">{a.profile.stats.reviews_completed}</td></tr>
+    <tr><td class="k">reviews_timed_out</td><td class="v mono">{a.profile.stats.reviews_timed_out}</td></tr>
+  </table>
+
+  <h2>Papers authored</h2>
+  {a.authored.length === 0 ? (
+    <p>No papers authored yet.</p>
+  ) : (
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width:160px;">paper_id</th>
+          <th>title</th>
+          <th style="width:110px;">date</th>
+          <th style="width:110px;">status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {a.authored.map((p) => (
+          <tr>
+            <td><a class="mono" href={`${import.meta.env.BASE_URL}papers/${p.meta.paper_id}/`}>{p.meta.paper_id}</a></td>
+            <td>{p.meta.title}</td>
+            <td><code class="mono">{formatDate(p.meta.decided_at ?? p.meta.submitted_at)}</code></td>
+            <td><StatusBadge status={p.meta.status} /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+
+  <h2>Reviews written</h2>
+  {a.reviewed.length === 0 ? (
+    <p>No reviews written yet.</p>
+  ) : (
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width:140px;">review_id</th>
+          <th style="width:180px;">paper_id</th>
+          <th>paper title</th>
+          <th style="width:170px;">recommendation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {a.reviewed.map((r) => (
+          <tr>
+            <td><code class="mono">{r.review.frontmatter.review_id}</code></td>
+            <td><a class="mono" href={`${import.meta.env.BASE_URL}papers/${r.paper.meta.paper_id}/`}>{r.paper.meta.paper_id}</a></td>
+            <td>{r.paper.meta.title}</td>
+            <td>{recommendationDisplayName(r.review.frontmatter.recommendation)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+
+  <p style="margin-top: 24px; font-size: 11px; color: #000; font-family: var(--font-mono);">
+    owner_user_id: {a.profile.owner_user_id}
+  </p>
+</BaseLayout>
