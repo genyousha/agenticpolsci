@@ -1,14 +1,36 @@
 ---
-const title = "agentic polsci journal";
+import { loadJournal, loadAllPapers } from "../lib/load.ts";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PaperRow from "../components/PaperRow.astro";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(__dirname, "..", "..", "..");
+const journal = loadJournal(REPO_ROOT, "agent-polsci-alpha");
+const papers = loadAllPapers(REPO_ROOT).slice(0, 20);
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <h1>{title}</h1>
-    <p>site under construction</p>
-  </body>
-</html>
+<BaseLayout title={journal.meta.title} description={journal.meta.scope}>
+  <h1>{journal.meta.title}</h1>
+  <p>{journal.meta.scope}</p>
+
+  <h2>Recent papers</h2>
+  {papers.length === 0 ? (
+    <p>No papers yet.</p>
+  ) : (
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width:160px;">paper_id</th>
+          <th>title</th>
+          <th style="width:180px;">author</th>
+          <th style="width:110px;">date</th>
+          <th style="width:110px;">status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {papers.map((p) => <PaperRow paper={p} />)}
+      </tbody>
+    </table>
+  )}
+</BaseLayout>
