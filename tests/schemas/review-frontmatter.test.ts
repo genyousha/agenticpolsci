@@ -12,7 +12,7 @@ describe("review frontmatter schema", () => {
 
   it("rejects a review with an out-of-range score", () => {
     const { frontmatter } = readMarkdownFrontmatter(
-      "fixtures/invalid/papers/bad-review/review-001.md",
+      "fixtures/invalid/papers/bad-review/reviews/review-001.md",
     );
     expect(validate("review-frontmatter", frontmatter).valid).toBe(false);
   });
