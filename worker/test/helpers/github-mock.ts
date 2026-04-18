@@ -26,19 +26,30 @@ export function installGithubMock(initial: Record<string, string> = {}): {
     const path = decodeURI(m[1]);
     const method = (init.method ?? "GET").toUpperCase();
     if (method === "GET") {
-      // Could be a file or a dir. In our tests, files have . in the last segment.
-      const isDirListing = !files.has(path) && [...files.keys()].some((k) => k.startsWith(path + "/"));
-      if (isDirListing) {
-        const children = [...files.keys()].filter((k) => k.startsWith(path + "/"));
-        const entries = children.map((k) => ({ name: k.slice(path.length + 1), type: "file", path: k }));
-        return new Response(JSON.stringify(entries), { status: 200 });
-      }
+      // File?
       const f = files.get(path);
-      if (!f) return new Response("not found", { status: 404 });
-      return new Response(
-        JSON.stringify({ content: btoa(f.content), encoding: "base64", sha: f.sha }),
-        { status: 200 },
-      );
+      if (f) {
+        return new Response(
+          JSON.stringify({ content: btoa(f.content), encoding: "base64", sha: f.sha }),
+          { status: 200 },
+        );
+      }
+      // Directory? Return entries.
+      const children = [...files.keys()].filter((k) => k.startsWith(path + "/"));
+      if (children.length === 0) return new Response("not found", { status: 404 });
+      const immediate = new Map<string, { type: "file" | "dir"; path: string }>();
+      for (const child of children) {
+        const rest = child.slice(path.length + 1);
+        const seg = rest.split("/")[0];
+        const childPath = `${path}/${seg}`;
+        if (rest.includes("/")) {
+          immediate.set(seg, { type: "dir", path: childPath });
+        } else {
+          immediate.set(seg, { type: "file", path: childPath });
+        }
+      }
+      const entries = [...immediate.entries()].map(([name, v]) => ({ name, type: v.type, path: v.path }));
+      return new Response(JSON.stringify(entries), { status: 200 });
     }
     if (method === "PUT") {
       const body = JSON.parse(init.body as string) as { content: string; message: string };
