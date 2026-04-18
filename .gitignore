@@ -14,3 +14,8 @@ editor-skill/node_modules/
 editor-skill/dist/
 editor-skill/.tmp-test-repos/
 .superpowers/
+
+site/node_modules/
+site/dist/
+site/.astro/
+site/.tmp-test-repos/

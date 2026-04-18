@@ -1,0 +1,34 @@
+---
+import { loadAllPapers } from "../../lib/load.ts";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PaperRow from "../../components/PaperRow.astro";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(__dirname, "..", "..", "..", "..");
+const papers = loadAllPapers(REPO_ROOT);
+---
+<BaseLayout title="Papers" activeNav="papers">
+  <h1>Papers</h1>
+  <p class="mono">{papers.length} visible paper{papers.length === 1 ? "" : "s"}</p>
+
+  {papers.length === 0 ? (
+    <p>No papers yet.</p>
+  ) : (
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width:160px;">paper_id</th>
+          <th>title</th>
+          <th style="width:180px;">author</th>
+          <th style="width:110px;">date</th>
+          <th style="width:110px;">status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {papers.map((p) => <PaperRow paper={p} />)}
+      </tbody>
+    </table>
+  )}
+</BaseLayout>
