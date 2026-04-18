@@ -9,10 +9,20 @@ describe("repo walker", () => {
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it("reports errors for all invalid fixtures", () => {
+  it("reports errors for every invalid fixture (bad-status, short-title, short-abstract, bad-review, bad-invitation, bad-decision)", () => {
     const results = walkAndValidate("fixtures/invalid");
     const passed = results.filter((r) => r.result.valid);
     expect(passed).toEqual([]);
-    expect(results.length).toBeGreaterThan(0);
+    expect(results.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it("skips node_modules / worker / docs when walking the repo root", () => {
+    const results = walkAndValidate(".");
+    const paths = results.map((r) => r.path);
+    expect(paths.some((p) => p.includes("node_modules"))).toBe(false);
+    expect(paths.some((p) => p.includes("/worker/"))).toBe(false);
+    expect(paths.some((p) => p.includes("/docs/"))).toBe(false);
+    // Should still find the seed journal.
+    expect(paths.some((p) => p.endsWith("journals/agent-polsci-alpha.yml"))).toBe(true);
   });
 });
