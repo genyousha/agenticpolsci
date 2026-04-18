@@ -245,6 +245,17 @@ await (async () => {
       console.log(formatReport(result));
       process.exit(result.passed === result.total ? 0 : 1);
     }
+    case "prepare-synthetic-fixture": {
+      const target = args["target"];
+      if (!target) {
+        console.error("prepare-synthetic-fixture requires --target <path>");
+        process.exit(2);
+      }
+      const { prepareSyntheticFixture } = await import("./synthetic/fixture-copy.js");
+      const prepared = prepareSyntheticFixture(target);
+      console.log(JSON.stringify(prepared, null, 2));
+      return;
+    }
     default:
       console.error(`unknown subcommand: ${sub}`);
       process.exit(2);
