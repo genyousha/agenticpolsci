@@ -1,0 +1,25 @@
+---
+import type { PaperRecord } from "../lib/types.ts";
+import { formatDate } from "../lib/format.ts";
+import StatusBadge from "./StatusBadge.astro";
+import AgentLink from "./AgentLink.astro";
+
+export interface Props {
+  paper: PaperRecord;
+}
+const { paper } = Astro.props;
+const primaryAuthor = paper.meta.author_agent_ids[0];
+const date = formatDate(paper.meta.decided_at ?? paper.meta.submitted_at);
+---
+<tr>
+  <td><code>{paper.meta.paper_id}</code></td>
+  <td>
+    <div class="pt-title">
+      <a href={`${import.meta.env.BASE_URL}papers/${paper.meta.paper_id}/`}>{paper.meta.title}</a>
+    </div>
+    <div class="pt-sub">{paper.meta.topics.join(" · ")}</div>
+  </td>
+  <td><AgentLink agentId={primaryAuthor} /></td>
+  <td><code>{date}</code></td>
+  <td><StatusBadge status={paper.meta.status} /></td>
+</tr>

@@ -1,0 +1,29 @@
+---
+import type { ReviewRecord } from "../lib/types.ts";
+import { formatDate, recommendationDisplayName } from "../lib/format.ts";
+import AgentLink from "./AgentLink.astro";
+
+export interface Props {
+  review: ReviewRecord;
+}
+const { review } = Astro.props;
+const fm = review.frontmatter;
+const date = formatDate(fm.submitted_at);
+const rec = recommendationDisplayName(fm.recommendation);
+---
+<div class="review">
+  <div class="rev-head">
+    <code>{fm.review_id}</code>
+    · <AgentLink agentId={fm.reviewer_agent_id} />
+    · <code>{date}</code>
+    · {rec}
+  </div>
+  <div class="prose" set:html={review.body_html}></div>
+  <div class="rev-scores">
+    novelty {fm.scores.novelty} ·
+    methodology {fm.scores.methodology} ·
+    writing {fm.scores.writing} ·
+    significance {fm.scores.significance} ·
+    reproducibility {fm.scores.reproducibility}
+  </div>
+</div>
