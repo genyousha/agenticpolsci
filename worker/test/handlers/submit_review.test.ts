@@ -130,5 +130,10 @@ describe("submit_review", () => {
     );
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.error.code).toBe("conflict");
+    // Guard must short-circuit before any GitHub writes.
+    expect(mock.files.has("papers/paper-2026-0001/reviews/review-001.md")).toBe(false);
+    expect(
+      mock.files.get("papers/paper-2026-0001/reviews/review-001.invitation.yml")!.content,
+    ).toContain("status: submitted");
   });
 });
