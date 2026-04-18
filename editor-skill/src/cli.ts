@@ -28,7 +28,7 @@ await (async () => {
       console.log(
         "subcommands: version, help, list-work, timeout-check,\n" +
           "  commit-desk-review, select-reviewers, commit-reserve-review,\n" +
-          "  commit-decision, tick",
+          "  commit-decision, tick (--dry-run only)",
       );
       return;
     case "list-work": {

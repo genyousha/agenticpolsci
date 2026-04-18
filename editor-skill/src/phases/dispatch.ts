@@ -62,6 +62,8 @@ export async function selectAndWriteInvitations(
     thresholds: policy.thresholds,
     seedForRandom: input.seedForRandom,
     existingAgentsById: agentsById,
+    // Phase-2 deferred: populate from decision history. Until then,
+    // `recent_author_review_window` in thresholds.yml has no effect.
     recentReviewedAuthorsByReviewer: new Map(),
     priorReviewerIds,
   });

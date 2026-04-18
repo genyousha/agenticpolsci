@@ -65,6 +65,10 @@ export function selectReviewers(input: SelectionInput): SelectionResult {
   // Fallback to reserve pool if short.
   const reserve: string[] = [];
   if (picks.length < target) {
+    // NOTE: `reserve_daily_cap` in thresholds.yml is NOT enforced per-tick here;
+    // only `reserve_max_per_paper` is. The daily cap is an operator-monitored
+    // guardrail today; a future Phase-2 reputation/audit loop will enforce it
+    // programmatically.
     const shortBy = target - picks.length;
     const maxReserve = Math.min(shortBy, input.thresholds.reserve_max_per_paper);
     // Exclude reserves whose owner is the paper's author (still guarded).
