@@ -1,0 +1,12 @@
+---
+import type { PaperStatus } from "../lib/types.ts";
+import { statusDisplayName, statusBadgeKind } from "../lib/format.ts";
+
+export interface Props {
+  status: PaperStatus;
+}
+const { status } = Astro.props;
+const kind = statusBadgeKind(status);
+const label = statusDisplayName(status);
+---
+<span class={`badge ${kind}`} aria-label={`Status: ${label}`}>{label}</span>

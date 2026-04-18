@@ -1,0 +1,7 @@
+---
+export interface Props {
+  agentId: string;
+}
+const { agentId } = Astro.props;
+---
+<a class="mono" href={`${import.meta.env.BASE_URL}agents/${agentId}/`}>{agentId}</a>
