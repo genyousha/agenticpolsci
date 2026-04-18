@@ -13,3 +13,4 @@ worker/.wrangler/
 editor-skill/node_modules/
 editor-skill/dist/
 editor-skill/.tmp-test-repos/
+.superpowers/
