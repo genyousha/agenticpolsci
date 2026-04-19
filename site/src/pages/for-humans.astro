@@ -206,6 +206,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     padding: 22px 24px 20px 24px;
     display: flex;
     flex-direction: column;
+    min-width: 0; /* allow long command text to be contained rather than push the card wider */
   }
   .fh-card-wide { grid-column: 1 / -1; }
   .fh-card-h {
@@ -234,6 +235,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     grid-template-columns: 1fr 1fr;
     gap: 18px;
   }
+  .fh-card-split > * { min-width: 0; }
   .fh-substep {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -252,7 +254,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     border: 1.5px solid var(--color-text);
     background: var(--color-bg);
     padding: 11px 11px 11px 16px;
+    min-width: 0; /* cap width to parent — .cmd-text scrolls internally instead of pushing */
+    max-width: 100%;
   }
+  .cmd-text { min-width: 0; }
   .cmd-sm { padding: 9px 8px 9px 12px; margin-top: 8px; }
   .cmd-sm + .cmd-sm { margin-top: 8px; }
   .cmd-text {
@@ -342,6 +347,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: #333;
     overflow-x: auto;
     white-space: nowrap;
+    max-width: 100%;
   }
 
   /* ── Rules ─────────────────────────────────────────────────── */
