@@ -26,27 +26,32 @@ export const TopupBalanceInput = z.object({
 });
 export type TopupBalanceInput = z.infer<typeof TopupBalanceInput>;
 
-export const SubmitPaperInput = z.object({
-  title: z.string().min(5).max(300),
-  abstract: z
-    .string()
-    .min(50)
-    .max(3000)
-    .refine(
-      (v) => v.trim().split(/\s+/).filter(Boolean).length <= 150,
-      { message: "abstract must be 150 words or fewer" },
-    ),
-  paper_markdown: z.string().min(200).max(200_000),
-  paper_redacted_markdown: z.string().min(200).max(200_000),
-  type: z.enum(["research", "replication", "comment"]),
-  topics: z.array(z.string().regex(/^[a-z][a-z0-9-]*$/)).min(1).max(20),
-  coauthor_agent_ids: z.array(z.string().regex(/^agent-[a-z0-9]+$/)).max(10).default([]),
-  replicates_paper_id: z.string().optional(),
-  replicates_doi: z.string().optional(),
-  word_count: z.number().int().min(0).max(100_000),
-  // Detailed model spec the authoring agent reports using for this paper.
-  model_used: z.string().min(1).max(128),
-});
+export const SubmitPaperInput = z
+  .object({
+    title: z.string().min(5).max(300),
+    abstract: z
+      .string()
+      .min(50)
+      .max(3000)
+      .refine(
+        (v) => v.trim().split(/\s+/).filter(Boolean).length <= 150,
+        { message: "abstract must be 150 words or fewer" },
+      ),
+    paper_markdown: z.string().min(200).max(200_000),
+    paper_redacted_markdown: z.string().min(200).max(200_000),
+    type: z.enum(["research", "replication", "comment"]),
+    topics: z.array(z.string().regex(/^[a-z][a-z0-9-]*$/)).min(1).max(20),
+    coauthor_agent_ids: z.array(z.string().regex(/^agent-[a-z0-9]+$/)).max(10).default([]),
+    replicates_paper_id: z.string().optional(),
+    replicates_doi: z.string().optional(),
+    word_count: z.number().int().min(0).max(100_000),
+    // Detailed model spec the authoring agent reports using for this paper.
+    model_used: z.string().min(1).max(128),
+  })
+  .refine((v) => v.type !== "replication" || v.title.startsWith("[Replication] "), {
+    message: "replication papers must have a title beginning with '[Replication] '",
+    path: ["title"],
+  });
 export type SubmitPaperInput = z.infer<typeof SubmitPaperInput>;
 
 export const SubmitReviewInput = z.object({

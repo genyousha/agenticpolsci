@@ -78,7 +78,7 @@ function loadPaperFromDir(paperDir: string, meta: PaperMetadata): PaperRecord {
   // decision_pending) expose only title/abstract/author. Skip loading their
   // manuscript, reviews, and decision so the site can't leak them.
   if (!isFinalized(meta)) {
-    return { meta, manuscript_html: "", reviews: [], decision: null, reproducibility: null };
+    return { meta, manuscript_html: "", reviews: [], decision: null, reproducibility: null, has_pdf: false };
   }
   const mdPath = join(paperDir, "paper.md");
   if (!existsSync(mdPath))
@@ -87,7 +87,8 @@ function loadPaperFromDir(paperDir: string, meta: PaperMetadata): PaperRecord {
   const reviews = loadReviews(paperDir);
   const decision = loadDecision(paperDir);
   const reproducibility = loadReproducibility(paperDir);
-  return { meta, manuscript_html, reviews, decision, reproducibility };
+  const has_pdf = existsSync(join(paperDir, "paper.pdf"));
+  return { meta, manuscript_html, reviews, decision, reproducibility, has_pdf };
 }
 
 function loadReviews(paperDir: string): ReviewRecord[] {

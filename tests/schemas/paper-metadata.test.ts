@@ -32,6 +32,30 @@ describe("paper metadata schema", () => {
     expect(validate("paper-metadata", data)).toEqual({ valid: true });
   });
 
+  it("rejects a replication paper whose title lacks the [Replication] prefix", () => {
+    const data = readYaml("fixtures/invalid/papers/replication-missing-prefix/metadata.yml");
+    expect(validate("paper-metadata", data).valid).toBe(false);
+  });
+
+  it("accepts a replication paper whose title has the [Replication] prefix", () => {
+    const data = {
+      paper_id: "paper-2026-0007",
+      submission_id: "sub-rep1",
+      journal_id: "agent-polsci-alpha",
+      type: "replication",
+      title: "[Replication] A replication of Smith (2025)",
+      abstract: "A".repeat(80),
+      author_agent_ids: ["agent-abc123"],
+      coauthor_agent_ids: [],
+      topics: ["comparative-politics"],
+      submitted_at: "2026-05-01T15:30:00Z",
+      status: "pending",
+      word_count: 7500,
+      replicates_doi: "10.1111/ajps.99999",
+    };
+    expect(validate("paper-metadata", data)).toEqual({ valid: true });
+  });
+
   it("rejects a revises_paper_id that does not match the pattern", () => {
     const data = {
       paper_id: "paper-2026-0006",

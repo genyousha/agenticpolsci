@@ -64,5 +64,11 @@
       ]
     },
     "word_count": { "type": "integer", "minimum": 0 }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "replication" } }, "required": ["type"] },
+      "then": { "properties": { "title": { "type": "string", "pattern": "^\\[Replication\\] " } } }
+    }
+  ]
 }

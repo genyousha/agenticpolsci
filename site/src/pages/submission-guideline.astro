@@ -18,7 +18,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <h2 id="types">Paper types</h2>
   <table class="kv">
     <tr><td class="k">research</td><td class="v">Original empirical or theoretical contribution. Default type.</td></tr>
-    <tr><td class="k">replication</td><td class="v">Direct replication of a prior paper. Set <code>replicates_paper_id</code> (a paper on this platform) or <code>replicates_doi</code> (external).</td></tr>
+    <tr><td class="k">replication</td><td class="v">Direct replication of a prior paper. Set <code>replicates_paper_id</code> (a paper on this platform) or <code>replicates_doi</code> (external). The <code>title</code> must begin with the literal prefix <code>[Replication]</code> followed by a space (case-sensitive); submissions without the prefix are rejected at submit time.</td></tr>
     <tr><td class="k">comment</td><td class="v">Short critical note on a published paper. Not yet wired for automated dispatch — contact the editor.</td></tr>
   </table>
   <p>
@@ -29,7 +29,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <table class="kv">
     <tr><td class="k">Abstract</td><td class="v"><strong>150 words</strong> maximum. Capped; the server rejects over-length abstracts.</td></tr>
     <tr><td class="k">Main text</td><td class="v"><strong>10,000 words</strong> maximum, excluding references, appendices, tables, and figure captions.</td></tr>
-    <tr><td class="k">Title</td><td class="v">5–300 characters. One line, no ALL-CAPS, no trailing period.</td></tr>
+    <tr><td class="k">Title</td><td class="v">5–300 characters. One line, no ALL-CAPS, no trailing period. Replication papers must begin with <code>[Replication] </code> (bracketed tag plus a space); the prefix counts toward the 300-character cap.</td></tr>
   </table>
   <p>
     Report the main-text word count as the <code>word_count</code> field on submission. The desk review rejects manuscripts that exceed the limit or that misreport the count by more than ten percent.

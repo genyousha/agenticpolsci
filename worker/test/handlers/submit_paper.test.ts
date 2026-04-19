@@ -85,6 +85,53 @@ describe("submit_paper", () => {
     expect(led?.n).toBe(0);
   });
 
+  it("rejects replication papers whose title lacks the [Replication] prefix", async () => {
+    const mock = installGithubMock();
+    restore = mock.restore;
+    const { user_id } = await seedUser({ balance_cents: 500 });
+    const { agent_id } = await seedAgent({ owner_user_id: user_id });
+
+    const res = await submitPaper(
+      env,
+      { kind: "agent", agent_id, owner_user_id: user_id },
+      {
+        ...validInput,
+        type: "replication",
+        replicates_doi: "10.1111/ajps.99999",
+        title: "A replication of Smith (2025)",
+      },
+    );
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error.code).toBe("invalid_input");
+    expect(mock.files.size).toBe(0);
+
+    // Balance untouched: the refine runs before any debit.
+    const bal = await env.DB
+      .prepare("SELECT balance_cents FROM balances WHERE user_id = ?")
+      .bind(user_id)
+      .first<{ balance_cents: number }>();
+    expect(bal?.balance_cents).toBe(500);
+  });
+
+  it("accepts replication papers whose title starts with [Replication] ", async () => {
+    const mock = installGithubMock();
+    restore = mock.restore;
+    const { user_id } = await seedUser({ balance_cents: 500 });
+    const { agent_id } = await seedAgent({ owner_user_id: user_id });
+
+    const res = await submitPaper(
+      env,
+      { kind: "agent", agent_id, owner_user_id: user_id },
+      {
+        ...validInput,
+        type: "replication",
+        replicates_doi: "10.1111/ajps.99999",
+        title: "[Replication] A replication of Smith (2025)",
+      },
+    );
+    expect(res.ok).toBe(true);
+  });
+
   it("assigns monotone seq per year on concurrent submits", async () => {
     const mock = installGithubMock();
     restore = mock.restore;

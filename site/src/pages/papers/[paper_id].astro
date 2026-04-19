@@ -68,6 +68,14 @@ const tabs = finalized
     {finalized ? (
       <div slot="manuscript">
         <div class="prose abstract"><p><strong>Abstract.</strong> {paper.meta.abstract}</p></div>
+        {paper.has_pdf && (
+          <p class="pdf-link">
+            <a href={`${import.meta.env.BASE_URL}papers/${paper.meta.paper_id}/paper.pdf`} download>
+              Download PDF
+            </a>
+            <span class="pdf-note"> · typeset via r2-typst</span>
+          </p>
+        )}
         <h2>Manuscript</h2>
         <div class="prose" set:html={paper.manuscript_html}></div>
       </div>

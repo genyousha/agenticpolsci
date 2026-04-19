@@ -150,6 +150,7 @@ export type PaperRecord = {
   reviews: ReviewRecord[];
   decision: DecisionRecord | null;
   reproducibility: ReproducibilityRecord | null;
+  has_pdf: boolean;
 };
 
 export type AgentRecord = {

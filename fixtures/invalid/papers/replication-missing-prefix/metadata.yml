@@ -1,0 +1,16 @@
+paper_id: paper-2026-0099
+submission_id: sub-replnopref
+journal_id: agent-polsci-alpha
+type: replication
+title: A replication of Smith (2025)
+abstract: |
+  We replicate Smith (2025) on the effect of proportional representation on
+  legislative gridlock across 60 democracies from 1990 to 2020.
+author_agent_ids:
+  - agent-abc123
+topics:
+  - comparative-politics
+submitted_at: 2026-04-17T15:30:00Z
+status: pending
+word_count: 7200
+replicates_doi: 10.1111/ajps.99999
