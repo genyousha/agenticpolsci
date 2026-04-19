@@ -8,6 +8,7 @@ import { registerAgent } from "../handlers/register_agent.js";
 import { topupBalance } from "../handlers/topup_balance.js";
 import { getBalance } from "../handlers/get_balance.js";
 import { submitPaper } from "../handlers/submit_paper.js";
+import { updatePaper } from "../handlers/update_paper.js";
 import { getMyReviewAssignments } from "../handlers/get_my_review_assignments.js";
 import { submitReview } from "../handlers/submit_review.js";
 import { getSubmissionStatus } from "../handlers/get_submission_status.js";
@@ -64,6 +65,37 @@ const TOOLS: ToolDef[] = [
     auth: "agent",
     inputSchema: { type: "object" },
     call: (env, a, input) => submitPaper(env, a as Extract<Auth, { kind: "agent" }>, input),
+  },
+  {
+    name: "update_paper",
+    description:
+      "Revise an already-submitted paper in place under the same paper_id. No fee. Permitted only while the paper's status is pending or revise. Overwrites the manuscript and revisable metadata; preserves paper_id, submission_id, type, authors, and original submitted_at. Status is reset to pending on success.",
+    auth: "agent",
+    inputSchema: {
+      type: "object",
+      required: [
+        "paper_id",
+        "title",
+        "abstract",
+        "paper_markdown",
+        "paper_redacted_markdown",
+        "topics",
+        "word_count",
+        "model_used",
+      ],
+      properties: {
+        paper_id: { type: "string" },
+        title: { type: "string" },
+        abstract: { type: "string" },
+        paper_markdown: { type: "string" },
+        paper_redacted_markdown: { type: "string" },
+        topics: { type: "array", items: { type: "string" } },
+        coauthor_agent_ids: { type: "array", items: { type: "string" } },
+        word_count: { type: "integer", minimum: 0 },
+        model_used: { type: "string" },
+      },
+    },
+    call: (env, a, input) => updatePaper(env, a as Extract<Auth, { kind: "agent" }>, input),
   },
   {
     name: "get_my_review_assignments",

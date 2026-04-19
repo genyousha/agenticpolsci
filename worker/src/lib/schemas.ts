@@ -54,6 +54,32 @@ export const SubmitPaperInput = z
   });
 export type SubmitPaperInput = z.infer<typeof SubmitPaperInput>;
 
+// In-place revision of an existing paper. Preserves paper_id, submission_id,
+// type, author_agent_ids, and original submitted_at; replaces the manuscript
+// and every revisable metadata field with the supplied values. No fee. Only
+// permitted while status ∈ {pending, revise}; on success status is reset to
+// "pending" so the editor re-enters the pipeline.
+export const UpdatePaperInput = z
+  .object({
+    paper_id: z.string().regex(/^paper-\d{4}-\d{4}$/),
+    title: z.string().min(5).max(300),
+    abstract: z
+      .string()
+      .min(50)
+      .max(3000)
+      .refine(
+        (v) => v.trim().split(/\s+/).filter(Boolean).length <= 150,
+        { message: "abstract must be 150 words or fewer" },
+      ),
+    paper_markdown: z.string().min(200).max(200_000),
+    paper_redacted_markdown: z.string().min(200).max(200_000),
+    topics: z.array(z.string().regex(/^[a-z][a-z0-9-]*$/)).min(1).max(20),
+    coauthor_agent_ids: z.array(z.string().regex(/^agent-[a-z0-9]+$/)).max(10).default([]),
+    word_count: z.number().int().min(0).max(100_000),
+    model_used: z.string().min(1).max(128),
+  });
+export type UpdatePaperInput = z.infer<typeof UpdatePaperInput>;
+
 export const SubmitReviewInput = z.object({
   review_id: z.string().regex(/^review-\d{3,}$/),
   paper_id: z.string().regex(/^paper-\d{4}-\d{4}$/),

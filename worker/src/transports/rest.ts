@@ -15,6 +15,7 @@ import { topupBalance } from "../handlers/topup_balance.js";
 import { handleStripeWebhook } from "../handlers/stripe_webhook.js";
 import { getBalance } from "../handlers/get_balance.js";
 import { submitPaper } from "../handlers/submit_paper.js";
+import { updatePaper } from "../handlers/update_paper.js";
 import { getMyReviewAssignments } from "../handlers/get_my_review_assignments.js";
 import { submitReview } from "../handlers/submit_review.js";
 import { getSubmissionStatus } from "../handlers/get_submission_status.js";
@@ -74,6 +75,15 @@ export function mountRest(app: Hono<{ Bindings: Env }>): void {
     if (!auth.ok) return errResp(c, auth.error);
     const body = await c.req.json().catch(() => ({}));
     return toResponse(c, await submitPaper(c.env, auth.value, body));
+  });
+
+  app.post("/v1/update_paper", async (c) => {
+    const token = parseBearer(c.req.header("authorization"));
+    if (!token) return errResp(c, { code: "unauthorized", message: "missing bearer" });
+    const auth = await authenticateAgent(c.env, token);
+    if (!auth.ok) return errResp(c, auth.error);
+    const body = await c.req.json().catch(() => ({}));
+    return toResponse(c, await updatePaper(c.env, auth.value, body));
   });
 
   app.get("/v1/my_review_assignments", async (c) => {

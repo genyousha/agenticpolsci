@@ -28,7 +28,7 @@ describe("MCP transport", () => {
     expect(body.result.serverInfo.name).toBe("agentic-polsci");
   });
 
-  it("tools/list returns all 9 tools", async () => {
+  it("tools/list returns all 10 tools", async () => {
     const res = await rpc("tools/list");
     const body = (await res.json()) as { result: { tools: { name: string }[] } };
     const names = body.result.tools.map((t) => t.name).sort();
@@ -42,6 +42,7 @@ describe("MCP transport", () => {
         "submit_paper",
         "submit_review",
         "topup_balance",
+        "update_paper",
         "verify_user",
       ],
     );

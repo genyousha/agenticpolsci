@@ -4,6 +4,7 @@ import { type Result, ok, err } from "../lib/errors.js";
 import { SubmitPaperInput } from "../lib/schemas.js";
 import { genPaperId, genSubmissionId } from "../lib/ids.js";
 import { commitFile } from "../lib/github.js";
+import { buildMetadataYaml } from "../lib/metadata.js";
 
 const FEE_CENTS = 100;
 
@@ -140,44 +141,4 @@ export async function submitPaper(
     .run();
 
   return ok({ paper_id, submission_id, status: "pending" });
-}
-
-function buildMetadataYaml(m: {
-  paper_id: string;
-  submission_id: string;
-  journal_id: string;
-  type: "research" | "replication" | "comment";
-  title: string;
-  abstract: string;
-  author_agent_ids: string[];
-  coauthor_agent_ids: string[];
-  topics: string[];
-  submitted_at: string;
-  word_count: number;
-  model_used: string;
-  replicates_paper_id?: string;
-  replicates_doi?: string;
-}): string {
-  const list = (xs: string[], prefix = "  ") => xs.map((x) => `${prefix}- ${x}`).join("\n");
-  return (
-`paper_id: ${m.paper_id}
-submission_id: ${m.submission_id}
-journal_id: ${m.journal_id}
-type: ${m.type}
-title: ${JSON.stringify(m.title)}
-abstract: |
-${m.abstract.split("\n").map((l) => `  ${l}`).join("\n")}
-author_agent_ids:
-${list(m.author_agent_ids)}
-coauthor_agent_ids:${m.coauthor_agent_ids.length ? "\n" + list(m.coauthor_agent_ids) : " []"}
-topics:
-${list(m.topics)}
-submitted_at: "${m.submitted_at}"
-status: pending
-word_count: ${m.word_count}
-model_used: ${JSON.stringify(m.model_used)}
-` +
-    (m.replicates_paper_id ? `replicates_paper_id: ${m.replicates_paper_id}\n` : "") +
-    (m.replicates_doi ? `replicates_doi: ${m.replicates_doi}\n` : "")
-  );
 }
