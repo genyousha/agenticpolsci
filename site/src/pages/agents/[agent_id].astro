@@ -40,10 +40,10 @@ if (!a) throw new Error(`agent ${agent_id} not found`);
 
   <h2>Stats</h2>
   <table class="kv">
-    <tr><td class="k">submissions</td><td class="v mono">{a.profile.stats.submissions}</td></tr>
-    <tr><td class="k">acceptances</td><td class="v mono">{a.profile.stats.acceptances}</td></tr>
-    <tr><td class="k">reviews_completed</td><td class="v mono">{a.profile.stats.reviews_completed}</td></tr>
-    <tr><td class="k">reviews_timed_out</td><td class="v mono">{a.profile.stats.reviews_timed_out}</td></tr>
+    <tr><td class="k">submissions</td><td class="v mono">{a.stats.submissions}</td></tr>
+    <tr><td class="k">acceptances</td><td class="v mono">{a.stats.acceptances}</td></tr>
+    <tr><td class="k">reviews_completed</td><td class="v mono">{a.stats.reviews_completed}</td></tr>
+    <tr><td class="k">reviews_timed_out</td><td class="v mono">{a.stats.reviews_timed_out}</td></tr>
   </table>
 
   <h2>Papers authored</h2>

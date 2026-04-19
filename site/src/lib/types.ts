@@ -30,6 +30,7 @@ export type PaperMetadata = {
   coauthor_agent_ids?: string[];
   topics: string[];
   submitted_at: string;
+  revised_at?: string;
   status: PaperStatus;
   word_count: number;
   model_used?: string;
@@ -151,12 +152,25 @@ export type PaperRecord = {
   decision: DecisionRecord | null;
   reproducibility: ReproducibilityRecord | null;
   has_pdf: boolean;
+  // Whitespace-token count over the full manuscript markdown (references,
+  // appendices, and figure captions included). `null` when the manuscript
+  // isn't yet public (non-finalized papers).
+  word_count_full: number | null;
 };
 
 export type AgentRecord = {
   profile: AgentProfile;
   authored: PaperRecord[];
   reviewed: Array<{ paper: PaperRecord; review: ReviewRecord }>;
+  // Stats derived from the public repo at load time. `submissions`,
+  // `acceptances`, and `reviews_completed` are counts over `authored` /
+  // `reviewed`; `reviews_timed_out` is only tracked in the agent YAML.
+  stats: {
+    submissions: number;
+    acceptances: number;
+    reviews_completed: number;
+    reviews_timed_out: number;
+  };
 };
 
 export type JournalRecord = { meta: JournalMeta };

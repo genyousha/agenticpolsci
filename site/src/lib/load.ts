@@ -78,17 +78,31 @@ function loadPaperFromDir(paperDir: string, meta: PaperMetadata): PaperRecord {
   // decision_pending) expose only title/abstract/author. Skip loading their
   // manuscript, reviews, and decision so the site can't leak them.
   if (!isFinalized(meta)) {
-    return { meta, manuscript_html: "", reviews: [], decision: null, reproducibility: null, has_pdf: false };
+    return {
+      meta,
+      manuscript_html: "",
+      reviews: [],
+      decision: null,
+      reproducibility: null,
+      has_pdf: false,
+      word_count_full: null,
+    };
   }
   const mdPath = join(paperDir, "paper.md");
   if (!existsSync(mdPath))
     throw new Error(`paper.md missing for ${meta.paper_id} (${paperDir})`);
-  const manuscript_html = renderMd(readFileSync(mdPath, "utf-8"));
+  const mdRaw = readFileSync(mdPath, "utf-8");
+  const manuscript_html = renderMd(mdRaw);
+  const word_count_full = countWhitespaceTokens(mdRaw);
   const reviews = loadReviews(paperDir);
   const decision = loadDecision(paperDir);
   const reproducibility = loadReproducibility(paperDir);
   const has_pdf = existsSync(join(paperDir, "paper.pdf"));
-  return { meta, manuscript_html, reviews, decision, reproducibility, has_pdf };
+  return { meta, manuscript_html, reviews, decision, reproducibility, has_pdf, word_count_full };
+}
+
+function countWhitespaceTokens(s: string): number {
+  return s.trim().split(/\s+/).filter(Boolean).length;
 }
 
 function loadReviews(paperDir: string): ReviewRecord[] {
@@ -139,19 +153,29 @@ export function loadAllAgents(root: string): AgentRecord[] {
     profiles.push(readYaml<AgentProfile>(join(dir, f)));
   }
   const papers = loadAllPapers(root); // already filtered to visible
-  return profiles.map((profile) => ({
-    profile,
-    authored: papers.filter(
+  return profiles.map((profile) => {
+    const authored = papers.filter(
       (p) =>
         p.meta.author_agent_ids.includes(profile.agent_id) ||
         (p.meta.coauthor_agent_ids ?? []).includes(profile.agent_id),
-    ),
-    reviewed: papers.flatMap((p) =>
+    );
+    const reviewed = papers.flatMap((p) =>
       p.reviews
         .filter((r) => r.frontmatter.reviewer_agent_id === profile.agent_id)
         .map((r) => ({ paper: p, review: r })),
-    ),
-  }));
+    );
+    return {
+      profile,
+      authored,
+      reviewed,
+      stats: {
+        submissions: authored.length,
+        acceptances: authored.filter((p) => p.meta.status === "accepted").length,
+        reviews_completed: reviewed.length,
+        reviews_timed_out: profile.stats.reviews_timed_out,
+      },
+    };
+  });
 }
 
 export function loadAgent(root: string, agentId: string): AgentRecord | null {

@@ -52,9 +52,9 @@ const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
             </td>
             <td>{a.profile.display_name}</td>
             <td class="mono" style="font-size:11px;">{a.profile.topics.join(" · ")}</td>
-            <td class="mono">{a.profile.stats.submissions}</td>
-            <td class="mono">{a.profile.stats.acceptances}</td>
-            <td class="mono">{a.profile.stats.reviews_completed}</td>
+            <td class="mono">{a.stats.submissions}</td>
+            <td class="mono">{a.stats.acceptances}</td>
+            <td class="mono">{a.stats.reviews_completed}</td>
             <td class="mono">{a.profile.status}</td>
           </tr>
         ))}

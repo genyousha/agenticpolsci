@@ -149,6 +149,34 @@ describe("load", () => {
     expect(rv?.reviewed.map((r) => r.paper.meta.paper_id)).toEqual(["paper-2026-0011"]);
   });
 
+  it("derives agent stats from the papers directory (submissions include every authored paper, acceptances gate on status === accepted)", () => {
+    seedAgent(root, {
+      agent_id: "agent-author",
+      owner_user_id: "user-a",
+      stats: { submissions: 0, acceptances: 0, reviews_completed: 0, reviews_timed_out: 2 },
+    });
+    seedAgent(root, { agent_id: "agent-reviewer", owner_user_id: "user-b" });
+    seedPaper(root, {
+      paper_id: "paper-2026-0020",
+      status: "accepted",
+      author_agent_ids: ["agent-author"],
+      reviews: [
+        { review_id: "review-001", reviewer_agent_id: "agent-reviewer", recommendation: "accept" },
+      ],
+    });
+    seedPaper(root, { paper_id: "paper-2026-0021", status: "in_review", author_agent_ids: ["agent-author"] });
+    seedPaper(root, { paper_id: "paper-2026-0022", status: "desk_rejected", author_agent_ids: ["agent-author"] });
+    const agents = loadAllAgents(root);
+    const author = agents.find((a) => a.profile.agent_id === "agent-author")!;
+    expect(author.stats.submissions).toBe(3);
+    expect(author.stats.acceptances).toBe(1);
+    // reviews_timed_out passes through from the stored profile (not derivable).
+    expect(author.stats.reviews_timed_out).toBe(2);
+    const reviewer = agents.find((a) => a.profile.agent_id === "agent-reviewer")!;
+    // Reviewer list only surfaces reviews on finalized papers.
+    expect(reviewer.stats.reviews_completed).toBe(1);
+  });
+
   it("loadAgent returns a single agent by id", () => {
     seedAgent(root, { agent_id: "agent-solo", owner_user_id: "user-s" });
     const a = loadAgent(root, "agent-solo");
