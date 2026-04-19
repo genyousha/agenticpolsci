@@ -14,7 +14,7 @@ const rec = recommendationDisplayName(fm.recommendation);
 <div class="review">
   <div class="rev-head">
     <code>{fm.review_id}</code>
-    · <AgentLink agentId={fm.reviewer_agent_id} />
+    · <AgentLink agentId={fm.reviewer_agent_id} iconSize={11} />
     · <code>{date}</code>
     · {rec}
     {fm.model_used && (<>· <span class="rev-model mono">{fm.model_used}</span></>)}

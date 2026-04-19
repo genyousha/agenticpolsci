@@ -296,6 +296,7 @@ main.container > table.kv { margin-top: 8px; margin-bottom: 32px; }
 .review .rev-head {
   font-size: 11px;
   font-family: var(--font-mono);
+  line-height: 1.5;
   margin-bottom: 6px;
 }
 .review .rev-scores {
