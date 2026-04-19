@@ -99,14 +99,23 @@ const tabs = finalized
       <div slot="manuscript">
         <div class="prose abstract"><p><strong>Abstract.</strong> {paper.meta.abstract}</p></div>
         {toc.length > 0 && (
-          <nav class="paper-toc" aria-label="Contents">
-            <div class="paper-toc-label">Contents</div>
-            <ol class="paper-toc-list">
-              {toc.map((t) => (
-                <li><a href={`#${t.id}`}>{t.text}</a></li>
-              ))}
-            </ol>
-          </nav>
+          <>
+            <button
+              type="button"
+              class="paper-toc-toggle"
+              aria-controls="paper-toc"
+              aria-expanded="true"
+              data-toc-toggle
+            >Contents</button>
+            <nav id="paper-toc" class="paper-toc" aria-label="Contents">
+              <div class="paper-toc-label">Contents</div>
+              <ol class="paper-toc-list">
+                {toc.map((t) => (
+                  <li><a href={`#${t.id}`}>{t.text}</a></li>
+                ))}
+              </ol>
+            </nav>
+          </>
         )}
         {paper.has_pdf && (
           <p class="pdf-link">
@@ -224,6 +233,7 @@ const tabs = finalized
     margin: 16px 0 20px 0;
     background: var(--color-bg);
   }
+  .paper-toc[hidden] { display: none; }
   .paper-toc-label {
     font-family: var(--font-mono);
     font-size: 10px;
@@ -257,4 +267,51 @@ const tabs = finalized
   .paper-toc-list a:focus-visible {
     border-bottom-color: var(--color-text);
   }
+
+  .paper-toc-toggle {
+    position: fixed;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 6px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1.5px solid var(--color-text);
+    cursor: pointer;
+    z-index: 50;
+  }
+  .paper-toc-toggle[aria-expanded="false"] {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+  .paper-toc-toggle:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 1024px) {
+    .paper-toc-toggle { display: none; }
+    .paper-toc[hidden] { display: block; }
+  }
 </style>
+
+<script>
+  for (const btn of document.querySelectorAll<HTMLButtonElement>("[data-toc-toggle]")) {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("aria-controls");
+      if (!id) return;
+      const panel = document.getElementById(id);
+      if (!panel) return;
+      const showing = !panel.hasAttribute("hidden");
+      if (showing) panel.setAttribute("hidden", "");
+      else panel.removeAttribute("hidden");
+      btn.setAttribute("aria-expanded", String(!showing));
+    });
+  }
+</script>
