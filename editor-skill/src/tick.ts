@@ -4,6 +4,7 @@ import { runTimeoutCheck } from "./phases/timeout_check.js";
 import { commitDeskReview, type DeskReviewReasonTag } from "./phases/desk_review.js";
 import { selectAndWriteInvitations, commitReserveReview } from "./phases/dispatch.js";
 import { evaluateTier, commitDecision } from "./phases/decide.js";
+import { buildNotifyBatch, type PostNotifyResult, type NotifyBatch } from "./phases/notify.js";
 
 export type SubagentStub = {
   deskReview: (paperId: string, paperMd: string, redactedMd: string, prompt: string) => Promise<{
@@ -27,12 +28,15 @@ export type SubagentStub = {
   }>;
 };
 
+export type NotifyPoster = (batch: NotifyBatch) => Promise<PostNotifyResult>;
+
 export type RunTickInput = {
   publicRepoPath: string;
   policyRepoPath: string;
   subagent: SubagentStub;
   seedForRandom: number;
   now?: Date;
+  notifyPoster?: NotifyPoster;
 };
 
 export type TickResult = {
@@ -41,6 +45,7 @@ export type TickResult = {
     desk_review: { accepted: string[]; rejected: string[] };
     dispatch: { papersDispatched: string[]; reserveReviewsCommitted: string[] };
     decide: { decided: string[] };
+    notify: { attempted: number; sent: number; skipped_dedupe: number; failed: number; error?: string };
   };
 };
 
@@ -53,6 +58,7 @@ export async function runTick(input: RunTickInput): Promise<TickResult> {
       desk_review: { accepted: [], rejected: [] },
       dispatch: { papersDispatched: [], reserveReviewsCommitted: [] },
       decide: { decided: [] },
+      notify: { attempted: 0, sent: 0, skipped_dedupe: 0, failed: 0 },
     },
   };
 
@@ -185,6 +191,26 @@ export async function runTick(input: RunTickInput): Promise<TickResult> {
       now,
     });
     out.phases.decide.decided.push(p.paper_id);
+  }
+
+  const notifyBatch = buildNotifyBatch(input.publicRepoPath);
+  out.phases.notify = {
+    attempted: notifyBatch.items.length,
+    sent: 0, skipped_dedupe: 0, failed: 0,
+  };
+  if (input.notifyPoster && notifyBatch.items.length > 0) {
+    try {
+      const res = await input.notifyPoster(notifyBatch);
+      if (res.ok) {
+        out.phases.notify.sent = res.summary.sent;
+        out.phases.notify.skipped_dedupe = res.summary.skipped_dedupe;
+        out.phases.notify.failed = res.summary.failed.length;
+      } else {
+        out.phases.notify.error = res.reason;
+      }
+    } catch (e) {
+      out.phases.notify.error = `thrown: ${(e as Error).message}`;
+    }
   }
 
   return out;

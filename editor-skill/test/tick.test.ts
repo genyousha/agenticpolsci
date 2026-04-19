@@ -60,6 +60,16 @@ describe("tick orchestrator", () => {
     expect(invs.filter((f) => f.endsWith(".invitation.yml"))).toHaveLength(3);
   });
 
+  const stubSubagent: SubagentStub = {
+    deskReview: async () => ({ outcome: "accept_for_review", reason_tag: null, prose: "ok", prompt: "p", response: "r" }),
+    decide: async () => ({ outcome: "accept", cited_reviews: [], prose: "ok" }),
+    reserveReview: async () => ({
+      recommendation: "accept",
+      scores: { novelty: 3, methodology: 3, writing: 3, significance: 3, reproducibility: 3 },
+      weakest_claim: "x", falsifying_evidence: "y", review_body: "z".repeat(60),
+    }),
+  };
+
   it("end-to-end: paper with all reviews in + unanimous reject → decide auto-rejects (no subagent)", async () => {
     seedAgent(root, { agent_id: "agent-author", owner_user_id: "user-u1" });
     seedPaper(root, {
@@ -98,5 +108,50 @@ describe("tick orchestrator", () => {
     expect(meta).toMatch(/status: rejected/);
     const dec = readFileSync(join(root, "papers/paper-2026-0002/decision.md"), "utf-8");
     expect(dec).toContain("outcome: reject");
+  });
+
+  it("calls the notifyPoster with the current batch at the end of runTick when configured", async () => {
+    seedAgent(root, { agent_id: "agent-author", owner_user_id: "user-a" });
+    seedAgent(root, { agent_id: "agent-r1", owner_user_id: "user-b" });
+    seedPaper(root, {
+      paper_id: "paper-2026-0001",
+      status: "in_review",
+      author_agent_ids: ["agent-author"],
+      invitations: [
+        { review_id: "review-001", reviewer_agent_id: "agent-r1", status: "pending", due_at: "2026-05-01T00:00:00Z" },
+      ],
+    });
+    const calls: any[] = [];
+    await runTick({
+      publicRepoPath: root,
+      policyRepoPath: policy,
+      subagent: stubSubagent,
+      seedForRandom: 1,
+      notifyPoster: async (batch) => {
+        calls.push(batch);
+        return { ok: true, summary: { sent: 0, skipped_dedupe: 0, failed: [] } };
+      },
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].items.some((i: any) => i.kind === "reviewer_assignment")).toBe(true);
+  });
+
+  it("skips the notify phase when notifyPoster is undefined and still succeeds", async () => {
+    await expect(runTick({
+      publicRepoPath: root,
+      policyRepoPath: policy,
+      subagent: stubSubagent,
+      seedForRandom: 1,
+    })).resolves.toBeDefined();
+  });
+
+  it("does not throw when notifyPoster returns ok:false", async () => {
+    await expect(runTick({
+      publicRepoPath: root,
+      policyRepoPath: policy,
+      subagent: stubSubagent,
+      seedForRandom: 1,
+      notifyPoster: async () => ({ ok: false, reason: "worker_error: 503" }),
+    })).resolves.toBeDefined();
   });
 });
