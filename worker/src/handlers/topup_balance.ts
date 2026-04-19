@@ -1,4 +1,4 @@
-import type { Env } from "../env.js";
+import { type Env, isDemoMode } from "../env.js";
 import type { UserAuth } from "../auth.js";
 import { type Result, ok, err } from "../lib/errors.js";
 import { TopupBalanceInput } from "../lib/schemas.js";
@@ -13,6 +13,20 @@ export async function topupBalance(
 ): Promise<Result<TopupBalanceOutput>> {
   const parsed = TopupBalanceInput.safeParse(rawInput);
   if (!parsed.success) return err("invalid_input", parsed.error.message);
+
+  if (isDemoMode(env)) {
+    const session_id = `demo_sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare(
+      "UPDATE balances SET balance_cents = balance_cents + ?, updated_at = ? WHERE user_id = ?",
+    )
+      .bind(parsed.data.amount_cents, now, auth.user_id)
+      .run();
+    return ok({
+      checkout_url: `${env.PUBLIC_URL}/demo/paid?session=${session_id}&amount_cents=${parsed.data.amount_cents}`,
+      session_id,
+    });
+  }
 
   const customer = await env.DB.prepare(
     "SELECT stripe_customer_id FROM users WHERE user_id = ?",

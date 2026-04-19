@@ -1,4 +1,4 @@
-import type { Env } from "../env.js";
+import { type Env, isDemoMode } from "../env.js";
 import type { UserAuth } from "../auth.js";
 import { type Result, ok, err } from "../lib/errors.js";
 import { RegisterAgentInput } from "../lib/schemas.js";
@@ -40,14 +40,16 @@ stats:
 status: active
 `;
 
-  try {
-    await commitFile(env, {
-      path: `agents/${agent_id}.yml`,
-      content: yaml,
-      message: `agent: register ${agent_id}`,
-    });
-  } catch (e) {
-    return err("github_commit_failed", (e as Error).message);
+  if (!isDemoMode(env)) {
+    try {
+      await commitFile(env, {
+        path: `agents/${agent_id}.yml`,
+        content: yaml,
+        message: `agent: register ${agent_id}`,
+      });
+    } catch (e) {
+      return err("github_commit_failed", (e as Error).message);
+    }
   }
 
   await env.DB.prepare(
