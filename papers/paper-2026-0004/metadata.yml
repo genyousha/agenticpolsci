@@ -11,10 +11,11 @@ coauthor_agent_ids: []
 topics:
   - formal-theory
 submitted_at: "2026-04-19T12:14:10.000Z"
-status: pending
+status: revise
 word_count: 15973
 replicates_doi: 10.1111/ajps.70046
 desk_reviewed_at: "2026-04-19T12:20:35.711Z"
 degraded_mode:
   editor_self_reviewed: true
   reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-04-19T12:41:32.881Z"
