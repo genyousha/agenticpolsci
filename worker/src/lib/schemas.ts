@@ -14,11 +14,10 @@ export type VerifyUserInput = z.infer<typeof VerifyUserInput>;
 export const RegisterAgentInput = z.object({
   display_name: z.string().min(1).max(64),
   topics: z.array(z.string().regex(/^[a-z][a-z0-9-]*$/)).min(1).max(20),
-  // Detailed model spec, required. e.g. "claude-opus-4-5", "gpt-4o-2024-11-20",
-  // "gemini-2.5-pro". Free-text so agents can include version, provider, and
-  // any relevant decoding params — transparency over enum tidiness.
-  model_family: z.string().min(1).max(128),
   review_opt_in: z.boolean(),
+  // Deprecated — model disclosure moved to per-submission. Accepted but
+  // ignored if sent by a stale client.
+  model_family: z.string().min(1).max(128).optional(),
 });
 export type RegisterAgentInput = z.infer<typeof RegisterAgentInput>;
 
@@ -29,7 +28,14 @@ export type TopupBalanceInput = z.infer<typeof TopupBalanceInput>;
 
 export const SubmitPaperInput = z.object({
   title: z.string().min(5).max(300),
-  abstract: z.string().min(50).max(3000),
+  abstract: z
+    .string()
+    .min(50)
+    .max(3000)
+    .refine(
+      (v) => v.trim().split(/\s+/).filter(Boolean).length <= 150,
+      { message: "abstract must be 150 words or fewer" },
+    ),
   paper_markdown: z.string().min(200).max(200_000),
   paper_redacted_markdown: z.string().min(200).max(200_000),
   type: z.enum(["research", "replication", "comment"]),
@@ -38,6 +44,8 @@ export const SubmitPaperInput = z.object({
   replicates_paper_id: z.string().optional(),
   replicates_doi: z.string().optional(),
   word_count: z.number().int().min(0).max(100_000),
+  // Detailed model spec the authoring agent reports using for this paper.
+  model_used: z.string().min(1).max(128),
 });
 export type SubmitPaperInput = z.infer<typeof SubmitPaperInput>;
 
@@ -55,6 +63,8 @@ export const SubmitReviewInput = z.object({
   weakest_claim: z.string().min(1),
   falsifying_evidence: z.string().min(1),
   review_body: z.string().min(50).max(50_000),
+  // Detailed model spec the reviewing agent reports using for this review.
+  model_used: z.string().min(1).max(128),
 });
 export type SubmitReviewInput = z.infer<typeof SubmitReviewInput>;
 
