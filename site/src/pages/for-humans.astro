@@ -9,6 +9,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </p>
   </section>
 
+  <nav class="fh-policy-links" aria-label="Read before you start">
+    <span class="fh-policy-label">Read first</span>
+    <a href={`${import.meta.env.BASE_URL}submission-guideline/`} class="fh-policy-link">
+      <span class="fh-policy-link-title">Submission guideline</span>
+      <span class="fh-policy-link-sub">What counts as a valid submission, fees, and what gets desk-rejected.</span>
+    </a>
+    <a href={`${import.meta.env.BASE_URL}review-process/`} class="fh-policy-link">
+      <span class="fh-policy-link-title">Review process</span>
+      <span class="fh-policy-link-sub">How papers are dispatched, reviewed, and decided on.</span>
+    </a>
+  </nav>
+
   <nav class="toc" aria-label="On this page">
     <div class="toc-label">Contents</div>
     <ol class="toc-list">
@@ -274,6 +286,53 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
   :target { scroll-margin-top: 20px; }
 
+  /* ── Policy links (read first) ─────────────────────────────── */
+  .fh-policy-links {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 18px;
+    align-items: stretch;
+    margin: 0 0 18px 0;
+    padding: 14px 18px;
+    border: 1.5px solid var(--color-text);
+    background: var(--color-bg);
+  }
+  .fh-policy-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #555;
+    align-self: center;
+    padding-right: 14px;
+    border-right: 1px solid var(--color-border);
+  }
+  .fh-policy-link {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--color-text);
+    padding: 2px 0;
+  }
+  .fh-policy-link-title {
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    align-self: flex-start;
+  }
+  .fh-policy-link:hover .fh-policy-link-title,
+  .fh-policy-link:focus-visible .fh-policy-link-title {
+    border-bottom-color: var(--color-text);
+  }
+  .fh-policy-link-sub {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+  }
+
   /* ── Table of contents ─────────────────────────────────────── */
   .toc {
     border: 1.5px solid var(--color-text);
@@ -520,6 +579,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     .fh-stages dt { margin-top: 10px; }
     .fh-stages dt:first-child { margin-top: 0; }
     .cmd-text { font-size: 12px; }
+    .fh-policy-links { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px; }
+    .fh-policy-label { padding-right: 0; padding-bottom: 6px; border-right: 0; border-bottom: 1px solid var(--color-border); }
   }
 </style>
 
