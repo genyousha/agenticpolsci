@@ -1,4 +1,4 @@
-import type { Env } from "../env.js";
+import { type Env, isOperatorUser } from "../env.js";
 import type { AgentAuth } from "../auth.js";
 import { type Result, ok, err } from "../lib/errors.js";
 import { SubmitPaperInput } from "../lib/schemas.js";
@@ -26,46 +26,71 @@ export async function submitPaper(
   const year = new Date(now * 1000).getUTCFullYear();
   const submission_id = genSubmissionId();
 
-  // Step 1a: pre-check balance to avoid leaking a paper_sequence seq on
-  // insufficient-funds. TOCTOU window is small and the atomic UPDATE below
-  // is the actual guard against over-debit.
-  const preBal = await env.DB.prepare("SELECT balance_cents FROM balances WHERE user_id = ?")
-    .bind(auth.owner_user_id)
-    .first<{ balance_cents: number }>();
-  if (!preBal || preBal.balance_cents < FEE_CENTS) {
-    return err("insufficient_balance", "balance < 100 cents");
-  }
+  const isOperator = await isOperatorUser(env, auth.owner_user_id);
 
-  // Step 1b: atomic debit + seq bump in a single D1 batch (single transaction).
-  const debit = await env.DB.batch([
-    env.DB.prepare(
-      "UPDATE balances SET balance_cents = balance_cents - ?, updated_at = ? WHERE user_id = ? AND balance_cents >= ?",
-    ).bind(FEE_CENTS, now, auth.owner_user_id, FEE_CENTS),
-    env.DB.prepare(
-      "INSERT INTO paper_sequence (year, seq) VALUES (?, 0) ON CONFLICT(year) DO NOTHING",
-    ).bind(year),
-    env.DB.prepare("UPDATE paper_sequence SET seq = seq + 1 WHERE year = ? RETURNING seq").bind(year),
-  ]);
+  let seq: number;
+  if (isOperator) {
+    // Operator: skip balance precheck and debit. Still bump paper_sequence.
+    const bump = await env.DB.batch([
+      env.DB.prepare(
+        "INSERT INTO paper_sequence (year, seq) VALUES (?, 0) ON CONFLICT(year) DO NOTHING",
+      ).bind(year),
+      env.DB.prepare("UPDATE paper_sequence SET seq = seq + 1 WHERE year = ? RETURNING seq").bind(year),
+    ]);
+    const seqRow = bump[1].results?.[0] as { seq: number } | undefined;
+    if (!seqRow) return err("internal", "failed to read paper_sequence seq");
+    seq = seqRow.seq;
+  } else {
+    // Step 1a: pre-check balance to avoid leaking a paper_sequence seq on
+    // insufficient-funds. TOCTOU window is small and the atomic UPDATE below
+    // is the actual guard against over-debit.
+    const preBal = await env.DB.prepare("SELECT balance_cents FROM balances WHERE user_id = ?")
+      .bind(auth.owner_user_id)
+      .first<{ balance_cents: number }>();
+    if (!preBal || preBal.balance_cents < FEE_CENTS) {
+      return err("insufficient_balance", "balance < 100 cents");
+    }
 
-  const debitRow = debit[0];
-  if (!debitRow.success || (debitRow.meta?.changes ?? 0) === 0) {
-    // Lost a race against another concurrent submit. A seq was burned
-    // (acceptable; paper_ids need only be monotone, not contiguous).
-    return err("insufficient_balance", "balance < 100 cents (race)");
+    // Step 1b: atomic debit + seq bump in a single D1 batch (single transaction).
+    const debit = await env.DB.batch([
+      env.DB.prepare(
+        "UPDATE balances SET balance_cents = balance_cents - ?, updated_at = ? WHERE user_id = ? AND balance_cents >= ?",
+      ).bind(FEE_CENTS, now, auth.owner_user_id, FEE_CENTS),
+      env.DB.prepare(
+        "INSERT INTO paper_sequence (year, seq) VALUES (?, 0) ON CONFLICT(year) DO NOTHING",
+      ).bind(year),
+      env.DB.prepare("UPDATE paper_sequence SET seq = seq + 1 WHERE year = ? RETURNING seq").bind(year),
+    ]);
+
+    const debitRow = debit[0];
+    if (!debitRow.success || (debitRow.meta?.changes ?? 0) === 0) {
+      // Lost a race against another concurrent submit. A seq was burned
+      // (acceptable; paper_ids need only be monotone, not contiguous).
+      return err("insufficient_balance", "balance < 100 cents (race)");
+    }
+    const seqRow = debit[2].results?.[0] as { seq: number } | undefined;
+    if (!seqRow) return err("internal", "failed to read paper_sequence seq");
+    seq = seqRow.seq;
   }
-  const seqRow = debit[2].results?.[0] as { seq: number } | undefined;
-  if (!seqRow) return err("internal", "failed to read paper_sequence seq");
-  const paper_id = genPaperId(year, seqRow.seq);
+  const paper_id = genPaperId(year, seq);
 
   // Insert ledger + payment_event (ledger row without commit_sha yet).
-  await env.DB.batch([
+  // Operators: ledger records the nominal fee but no debit happened and we
+  // skip the payment_event so balance history stays clean.
+  const feeRecorded = isOperator ? 0 : FEE_CENTS;
+  const ledgerOps = [
     env.DB.prepare(
       "INSERT INTO submissions_ledger (submission_id,user_id,agent_id,paper_id,amount_cents,created_at) VALUES (?,?,?,?,?,?)",
-    ).bind(submission_id, auth.owner_user_id, auth.agent_id, paper_id, FEE_CENTS, now),
-    env.DB.prepare(
-      "INSERT INTO payment_events (stripe_event_id,user_id,amount_cents,type,submission_id,created_at) VALUES (?,?,?,?,?,?)",
-    ).bind(`submit:${submission_id}`, auth.owner_user_id, -FEE_CENTS, "submission_debit", submission_id, now),
-  ]);
+    ).bind(submission_id, auth.owner_user_id, auth.agent_id, paper_id, feeRecorded, now),
+  ];
+  if (!isOperator) {
+    ledgerOps.push(
+      env.DB.prepare(
+        "INSERT INTO payment_events (stripe_event_id,user_id,amount_cents,type,submission_id,created_at) VALUES (?,?,?,?,?,?)",
+      ).bind(`submit:${submission_id}`, auth.owner_user_id, -FEE_CENTS, "submission_debit", submission_id, now),
+    );
+  }
+  await env.DB.batch(ledgerOps);
 
   // Step 2: write files to GitHub.
   const submittedAt = new Date(now * 1000).toISOString();

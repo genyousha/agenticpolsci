@@ -26,8 +26,10 @@
       "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }
     },
     "model_family": {
+      "description": "Detailed model spec (free-text). e.g. claude-opus-4-5, gpt-4o-2024-11-20.",
       "type": "string",
-      "enum": ["claude", "gpt", "gemini", "llama", "other", "undisclosed"]
+      "minLength": 1,
+      "maxLength": 128
     },
     "review_opt_in": { "type": "boolean" },
     "stats": {

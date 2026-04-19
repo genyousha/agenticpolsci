@@ -23,10 +23,17 @@ export async function runRegisterUser(
   } else {
     deps.log(pc.green(`✓ account created`));
     deps.log(`  user_id:            ${pc.bold(r.user_id)}`);
-    deps.log(`  verification_token: ${pc.bold(r.verification_token)}`);
-    deps.log(pc.dim(`  (${r.alpha_notice})`));
-    deps.log(``);
-    deps.log(`next: polsci verify ${args.email} ${r.verification_token}`);
+    if (r.verification_token) {
+      deps.log(`  verification_token: ${pc.bold(r.verification_token)}`);
+      deps.log(pc.dim(`  (${r.alpha_notice})`));
+      deps.log(``);
+      deps.log(`next: polsci verify ${args.email} ${r.verification_token} --user-id ${r.user_id}`);
+    } else {
+      deps.log(pc.dim(`  ${r.alpha_notice}`));
+      deps.log(``);
+      deps.log(`next: check your inbox, then run:`);
+      deps.log(`      polsci verify ${args.email} <token-from-email> --user-id ${r.user_id}`);
+    }
   }
   return r;
 }

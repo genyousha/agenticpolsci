@@ -35,7 +35,11 @@ async function defaultPrompt(key: string): Promise<unknown> {
     case "verificationToken":
       return input({ message: "Verification token:" });
     case "amount":
-      return number({ message: "Top up amount (USD):", default: 5, min: 5 });
+      return number({
+        message: "Top up amount (USD, or 0 to skip):",
+        default: 5,
+        validate: (v) => v === 0 || (typeof v === "number" && v >= 5) ? true : "must be 0 (skip) or ≥ 5",
+      });
     case "registerAgent":
       return confirm({ message: "Register an agent now?", default: true });
     case "agentName":
@@ -73,29 +77,42 @@ export async function runJoin(
   const email = (await d.prompt("email")) as string;
   const ru = await registerUser(apiUrl, { email });
   d.log(pc.green(`✓ account created (user_id: ${ru.user_id})`));
-  d.log(pc.dim(`  alpha: verification token is ${pc.bold(ru.verification_token)}`));
+  if (ru.verification_token) {
+    d.log(pc.dim(`  alpha: verification token is ${pc.bold(ru.verification_token)}`));
+  } else {
+    d.log(pc.dim(`  ${ru.alpha_notice}`));
+  }
 
-  // Step 2: verify
-  const token = ((await d.prompt("verificationToken")) as string) || ru.verification_token;
+  // Step 2: verify — prompt for token; fall back to alpha-mode inline token
+  // only if the server didn't email (i.e. returned it in the response).
+  const typed = ((await d.prompt("verificationToken")) as string).trim();
+  const token = typed || ru.verification_token;
+  if (!token) {
+    throw new Error("no verification token — paste the one emailed to you");
+  }
   const vu = await verifyUser(apiUrl, { email, verification_token: token });
   writeCredentials({ api_url: apiUrl, user_id: ru.user_id, user_token: vu.user_token });
   d.log(pc.green(`✓ verified`));
 
-  // Step 3: topup
+  // Step 3: topup (skippable by entering 0).
   const amount = ((await d.prompt("amount")) as number) ?? 5;
-  const amountCents = Math.round(amount * 100);
-  const startBal = (await getBalance(apiUrl, vu.user_token)).balance_cents;
-  const checkout = await topupBalance(apiUrl, vu.user_token, { amount_cents: amountCents });
-  await d.openUrl(checkout.checkout_url);
-  d.log(pc.dim(`waiting for payment…`));
-  const deadline = d.nowMs() + d.timeoutMs;
-  while (d.nowMs() < deadline) {
-    await d.sleep(2000);
-    const { balance_cents } = await getBalance(apiUrl, vu.user_token);
-    if (balance_cents >= startBal + amountCents) {
-      d.log(pc.green(`✓ $${(amountCents / 100).toFixed(2)} credited`));
-      break;
+  if (amount > 0) {
+    const amountCents = Math.round(amount * 100);
+    const startBal = (await getBalance(apiUrl, vu.user_token)).balance_cents;
+    const checkout = await topupBalance(apiUrl, vu.user_token, { amount_cents: amountCents });
+    await d.openUrl(checkout.checkout_url);
+    d.log(pc.dim(`waiting for payment…`));
+    const deadline = d.nowMs() + d.timeoutMs;
+    while (d.nowMs() < deadline) {
+      await d.sleep(2000);
+      const { balance_cents } = await getBalance(apiUrl, vu.user_token);
+      if (balance_cents >= startBal + amountCents) {
+        d.log(pc.green(`✓ $${(amountCents / 100).toFixed(2)} credited`));
+        break;
+      }
     }
+  } else {
+    d.log(pc.dim(`skipped topup — run \`polsci topup\` later or submit fee-free as an operator.`));
   }
 
   // Step 4: register agent

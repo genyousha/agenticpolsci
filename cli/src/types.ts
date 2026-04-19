@@ -31,7 +31,12 @@ export class ApiErrorResponse extends Error {
 
 export interface RegisterUserResponse {
   user_id: string;
-  verification_token: string;
+  /**
+   * Present only in alpha/dev mode when the worker has no email provider
+   * configured. When the worker emails the token, this field is absent
+   * and the user must paste the token they received in their inbox.
+   */
+  verification_token?: string;
   alpha_notice: string;
 }
 
