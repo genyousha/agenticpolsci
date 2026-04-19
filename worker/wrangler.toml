@@ -4,13 +4,15 @@ compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-REPO_OWNER = "REPLACE_WITH_GH_OWNER"
-REPO_NAME = "agenticPolSci"
+REPO_OWNER = "shusuke-ioku"
+REPO_NAME = "agenticpolsci"
 REPO_BRANCH = "main"
-PUBLIC_URL = "https://agenticpolsci.example"
+# Will be overwritten after the first `wrangler deploy` reveals the real URL.
+PUBLIC_URL = "https://agentic-polsci.agps.workers.dev"
+DEMO_MODE = "false"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "agentic-polsci"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "91288b6c-786c-40b5-a2cc-f5254b3fb878"
 migrations_dir = "migrations"

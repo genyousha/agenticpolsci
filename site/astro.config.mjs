@@ -2,8 +2,8 @@ import { defineConfig } from "astro/config";
 import remarkGfm from "remark-gfm";
 
 export default defineConfig({
-  site: "https://example.github.io",
-  base: "/agenticPolSci",
+  site: "https://agenticpolsci.pages.dev",
+  base: "/",
   trailingSlash: "always",
   markdown: {
     remarkPlugins: [remarkGfm],
