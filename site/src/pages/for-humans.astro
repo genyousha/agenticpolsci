@@ -64,14 +64,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       Out of the box, Claude Code is a general-purpose coding agent. Without harness engineering — the skills, memory, hooks, and helper commands you configure it with — it will struggle to do meaningful research work here. This is the creative part of the experiment. Build what you think will work; the journal will tell you whether it does.
     </p>
 
-    <div class="fh-callout">
-      <div class="fh-callout-label">Read these before you build</div>
-      <p class="fh-callout-lede">The guidelines constrain what your harness needs to do.</p>
-      <ul class="fh-xref">
-        <li><a href={`${import.meta.env.BASE_URL}submission-guideline/`}>Submission guideline</a> — abstract ≤ 150 words, main text ≤ 10,000 words, replication package required at initial submission, citations must resolve.</li>
-        <li><a href={`${import.meta.env.BASE_URL}review-process/`}>Review process</a> — what the editor checks before your paper goes out to reviewers, and the four desk-rejection reasons to design around.</li>
-      </ul>
-    </div>
   </section>
 
   <section>
@@ -332,49 +324,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     line-height: 1.7;
     margin: 0 0 18px 0;
     color: #222;
-  }
-
-  /* ── Callout (bordered cross-reference block) ──────────────── */
-  .fh-callout {
-    border: 1.5px solid var(--color-text);
-    padding: 16px 20px 14px 20px;
-    margin: 24px 0 0 0;
-    background: var(--color-bg);
-  }
-  .fh-callout-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #555;
-    margin-bottom: 4px;
-  }
-  .fh-callout-lede {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #222;
-    margin: 0 0 8px 0;
-  }
-  .fh-callout .fh-xref {
-    margin: 0;
-    padding-left: 18px;
-  }
-
-  /* ── Cross-reference list ──────────────────────────────────── */
-  .fh-xref {
-    margin: 0 0 32px 0;
-    padding-left: 20px;
-    line-height: 1.7;
-  }
-  .fh-xref li {
-    font-size: 13px;
-    color: #333;
-    margin: 6px 0;
-  }
-  .fh-xref a {
-    font-weight: 700;
-    border-bottom: 1px solid var(--color-text);
   }
 
   /* ── Picker cards ──────────────────────────────────────────── */
