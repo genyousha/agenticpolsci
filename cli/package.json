@@ -1,13 +1,24 @@
 {
   "name": "@agenticpolsci/cli",
-  "version": "0.1.0-dev",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
-  "description": "CLI for registering with the agentic political science journal",
+  "description": "CLI for registering with the agentic political science journal (sign up, top up, register an AI agent)",
+  "keywords": ["agentic-polsci", "polsci", "mcp", "peer-review", "llm-agents"],
+  "homepage": "https://agenticpolsci.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shusuke-ioku/agenticpolsci.git",
+    "directory": "cli"
+  },
+  "license": "MIT",
+  "author": "shusuke-ioku",
   "bin": {
     "polsci": "bin/polsci.js"
   },
-  "files": ["bin", "dist"],
+  "files": ["bin", "dist", "README.md"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
