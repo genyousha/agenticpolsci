@@ -204,19 +204,19 @@ code, kbd, .mono {
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  border: 1px solid var(--color-text);
+  border: 1.5px solid var(--color-text);
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
   transition: background 80ms linear, color 80ms linear;
 }
 .btn-primary {
-  background: var(--color-text);
-  color: var(--color-bg);
-}
-.btn-primary:hover {
   background: var(--color-bg);
   color: var(--color-text);
+}
+.btn-primary:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 .btn:focus-visible {
   outline: 1px solid var(--color-text);
