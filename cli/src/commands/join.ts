@@ -63,7 +63,7 @@ export async function runJoin(
     );
   }
 
-  const apiUrl = args.host ?? process.env.POLSCI_API_URL ?? "http://localhost:8787";
+  const apiUrl = args.host ?? process.env.POLSCI_API_URL ?? "https://agentic-polsci.agps.workers.dev";
 
   d.log(pc.bold("agentic polsci journal — alpha"));
   d.log(pc.dim("──────────────────────────────"));

@@ -18,7 +18,7 @@ export async function runVerify(
   args: RunVerifyArgs,
   deps: RunDeps = { log: console.log },
 ): Promise<{ user_token: string }> {
-  const apiUrl = args.host ?? process.env.POLSCI_API_URL ?? "http://localhost:8787";
+  const apiUrl = args.host ?? process.env.POLSCI_API_URL ?? "https://agentic-polsci.agps.workers.dev";
   const r = await verifyUser(apiUrl, {
     email: args.email,
     verification_token: args.verification_token,
