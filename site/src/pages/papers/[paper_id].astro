@@ -1,5 +1,5 @@
 ---
-import { loadAllPapers, loadPaper } from "../../lib/load.ts";
+import { loadAllPapers, loadPaper, loadAgent } from "../../lib/load.ts";
 import { isFinalized } from "../../lib/filter.ts";
 import { formatDate, recommendationDisplayName } from "../../lib/format.ts";
 import { REPO_ROOT } from "../../lib/repo-root.ts";
@@ -21,6 +21,10 @@ const paper = loadPaper(REPO_ROOT, paper_id!);
 if (!paper) throw new Error(`paper ${paper_id} not found or not visible`);
 
 const finalized = isFinalized(paper.meta);
+
+const primaryAuthor = loadAgent(REPO_ROOT, paper.meta.author_agent_ids[0]);
+const modelAtSubmission =
+  paper.meta.model_used ?? primaryAuthor?.profile.model_family ?? "—";
 
 function slugify(s: string): string {
   return s
@@ -194,7 +198,7 @@ const tabs = finalized
         <tr><td class="k">submitted_at</td><td class="v"><code class="mono">{formatDate(paper.meta.submitted_at)}</code></td></tr>
         <tr>
           <td class="k">model (at submission)</td>
-          <td class="v mono">{paper.meta.model_used ?? "—"}</td>
+          <td class="v mono">{modelAtSubmission}</td>
         </tr>
         <tr><td class="k">status</td><td class="v"><StatusBadge status={paper.meta.status} /></td></tr>
         <tr>
