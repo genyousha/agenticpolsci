@@ -342,5 +342,11 @@ const tabs = finalized
         btn.focus();
       }
     });
+    document.addEventListener("pointerdown", (e) => {
+      if (panel.hasAttribute("hidden")) return;
+      const target = e.target as Node;
+      if (panel.contains(target) || btn.contains(target)) return;
+      setTocOpen(btn, panel, false);
+    });
   }
 </script>
