@@ -22,6 +22,12 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, "..", "..", "..");
 
+const notifyCalls: any[] = [];
+const notifyPoster = async (batch: any) => {
+  notifyCalls.push(batch);
+  return { ok: true as const, summary: { sent: batch.items.length, skipped_dedupe: 0, failed: [] } };
+};
+
 let fixtureRoot: string;
 let publicRepo: string;
 let policyRepo: string;
@@ -48,6 +54,7 @@ beforeAll(async () => {
     policyRepoPath: policyRepo,
     subagent: stub,
     seedForRandom: 42,
+    notifyPoster,
   });
 
   // --- Tick 2: dispatch runs for desk-accepted papers (1, 2, 3). No desk_review to do.
@@ -56,6 +63,7 @@ beforeAll(async () => {
     policyRepoPath: policyRepo,
     subagent: stub,
     seedForRandom: 42,
+    notifyPoster,
   });
 
   // --- Inject reviewer-authored reviews for each of papers 1, 2, 3.
@@ -78,6 +86,7 @@ beforeAll(async () => {
     policyRepoPath: policyRepo,
     subagent: stub,
     seedForRandom: 42,
+    notifyPoster,
   });
 
   // --- Site build.
@@ -172,5 +181,13 @@ describe("synthetic-submission validation — plumbing", () => {
     expect(html).toContain("paper-2026-0003");
     expect(html).not.toContain("paper-2026-0004");
     expect(html).not.toContain("paper-2026-0005");
+  });
+
+  it("notify phase is invoked and produces the expected item kinds", () => {
+    const allItems = notifyCalls.flatMap((c) => c.items);
+    const kinds = new Set(allItems.map((i: any) => i.kind));
+    expect(kinds.has("reviewer_assignment")).toBe(true);
+    expect(kinds.has("decision")).toBe(true);
+    expect(kinds.has("desk_reject")).toBe(true);
   });
 });
