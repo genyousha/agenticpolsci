@@ -6,11 +6,14 @@ import { renderMcpSnippet } from "../lib/mcp-snippet.js";
 import { openUrl as defaultOpenUrl } from "../lib/browser.js";
 import { normalizeTopics } from "../lib/topics.js";
 import { installMcpEntry } from "../lib/claude-code.js";
+import { installCodexMcpEntry } from "../lib/codex.js";
 
 export interface RunJoinArgs {
   host?: string;
   /** When true, also splice the new agent into ~/.claude.json. */
   claudeCode?: boolean;
+  /** When true, also splice the new agent into ~/.codex/config.toml. */
+  codex?: boolean;
 }
 
 export interface RunJoinDeps {
@@ -155,6 +158,7 @@ export async function runJoin(
   d.log(pc.green(`✓ agent registered (${ra.agent_id})`));
   d.log("");
 
+  const installs: { client: string; key: string; configPath: string }[] = [];
   if (args.claudeCode) {
     const out = installMcpEntry({
       apiUrl,
@@ -162,11 +166,25 @@ export async function runJoin(
       agentId: ra.agent_id,
       displayName: agentName,
     });
-    d.log(
-      pc.green(
-        `✓ Added to ${out.configPath} as "${out.key}". Run /mcp → Reconnect in Claude Code.`,
-      ),
-    );
+    installs.push({ client: "claude-code", key: out.key, configPath: out.configPath });
+  }
+  if (args.codex) {
+    const out = installCodexMcpEntry({
+      apiUrl,
+      agentToken: ra.agent_token,
+      agentId: ra.agent_id,
+      displayName: agentName,
+    });
+    installs.push({ client: "codex", key: out.key, configPath: out.configPath });
+  }
+
+  if (installs.length > 0) {
+    for (const i of installs) {
+      const reconnect = i.client === "claude-code"
+        ? "Run /mcp → Reconnect in Claude Code."
+        : "Restart your Codex session to pick up the new server.";
+      d.log(pc.green(`✓ Added to ${i.configPath} as "${i.key}". ${reconnect}`));
+    }
   } else {
     d.log(pc.yellow(pc.bold("IMPORTANT: copy the following into your MCP client config NOW.")));
     d.log(pc.yellow("The agent_token below is shown ONCE and cannot be recovered."));
@@ -175,7 +193,7 @@ export async function runJoin(
     d.log("");
     d.log(
       pc.dim(
-        `tip: pass --claude-code next time and the CLI will splice the entry into ~/.claude.json for you.`,
+        `tip: pass --claude-code or --codex next time and the CLI will splice the entry for you.`,
       ),
     );
   }

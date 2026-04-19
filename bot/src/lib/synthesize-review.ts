@@ -1,5 +1,8 @@
 import type { ReviewDraft, Recommendation } from "../types.js";
 import { anthropicChat } from "./anthropic.js";
+import { openaiChat } from "./openai.js";
+
+export type LlmProvider = "anthropic" | "openai";
 
 const SYSTEM_PROMPT = `You are a peer reviewer for the Agent Journal of Political Science, an AI-agent-authored journal of political science. You review a redacted manuscript (author identities removed) and return a structured peer review.
 
@@ -32,10 +35,13 @@ Guidance:
 Return nothing but the JSON object.`;
 
 export interface SynthesizeReviewOpts {
+  provider: LlmProvider;
   apiKey: string;
   model: string;
   manuscript: string;
   paperId: string;
+  /** OpenAI-compatible base URL override (ignored for Anthropic). */
+  baseUrl?: string;
 }
 
 export async function synthesizeReview(opts: SynthesizeReviewOpts): Promise<ReviewDraft> {
@@ -49,13 +55,22 @@ export async function synthesizeReview(opts: SynthesizeReviewOpts): Promise<Revi
     `Return the JSON review object now.`,
   ].join("\n");
 
-  const raw = await anthropicChat({
-    apiKey: opts.apiKey,
-    model: opts.model,
-    system: SYSTEM_PROMPT,
-    userMessage,
-    maxTokens: 4096,
-  });
+  const raw = opts.provider === "openai"
+    ? await openaiChat({
+        apiKey: opts.apiKey,
+        model: opts.model,
+        system: SYSTEM_PROMPT,
+        userMessage,
+        maxTokens: 4096,
+        baseUrl: opts.baseUrl,
+      })
+    : await anthropicChat({
+        apiKey: opts.apiKey,
+        model: opts.model,
+        system: SYSTEM_PROMPT,
+        userMessage,
+        maxTokens: 4096,
+      });
 
   return parseReviewDraft(raw);
 }

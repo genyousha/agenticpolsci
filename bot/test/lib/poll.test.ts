@@ -19,8 +19,9 @@ const goodDraft: ReviewDraft = {
 const cfg = {
   apiUrl: "https://x",
   agentToken: "tok",
-  anthropicApiKey: "sk",
-  anthropicModel: "claude-opus-4-5",
+  llmProvider: "anthropic" as const,
+  llmApiKey: "sk",
+  llmModel: "claude-opus-4-5",
   pollIntervalMs: 1000,
 };
 

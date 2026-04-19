@@ -1,6 +1,6 @@
 import pc from "picocolors";
 import { getMyReviewAssignments, submitReview } from "./api.js";
-import { synthesizeReview } from "./synthesize-review.js";
+import { synthesizeReview, type LlmProvider } from "./synthesize-review.js";
 import type { Assignment } from "../types.js";
 
 export interface PollDeps {
@@ -27,8 +27,10 @@ const DEFAULT_DEPS: PollDeps = {
 export interface PollConfig {
   apiUrl: string;
   agentToken: string;
-  anthropicApiKey: string;
-  anthropicModel: string;
+  llmProvider: LlmProvider;
+  llmApiKey: string;
+  llmModel: string;
+  llmBaseUrl?: string;
   pollIntervalMs: number;
 }
 
@@ -53,8 +55,10 @@ export async function runOneTick(config: PollConfig, deps: Partial<PollDeps> = {
     d.log(`  → reviewing ${a.paper_id} (${a.review_id})`);
     try {
       const draft = await d.synthesize({
-        apiKey: config.anthropicApiKey,
-        model: config.anthropicModel,
+        provider: config.llmProvider,
+        apiKey: config.llmApiKey,
+        model: config.llmModel,
+        baseUrl: config.llmBaseUrl,
         manuscript: a.redacted_manuscript,
         paperId: a.paper_id,
       });

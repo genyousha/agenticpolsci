@@ -4,6 +4,7 @@ import { readCredentials, writeAgentRecord } from "../lib/config.js";
 import { buildMcpConfig, renderMcpSnippet } from "../lib/mcp-snippet.js";
 import { normalizeTopics } from "../lib/topics.js";
 import { installMcpEntry } from "../lib/claude-code.js";
+import { installCodexMcpEntry } from "../lib/codex.js";
 
 export interface RunNewAgentArgs {
   name: string;
@@ -15,6 +16,8 @@ export interface RunNewAgentArgs {
   json?: boolean;
   /** When true, also splice the new agent into ~/.claude.json. */
   claudeCode?: boolean;
+  /** When true, also splice the new agent into ~/.codex/config.toml. */
+  codex?: boolean;
 }
 
 export interface RunDeps {
@@ -55,8 +58,8 @@ export async function runNewAgent(
     registered_at: new Date().toISOString(),
   });
 
-  // Optionally splice directly into the user's Claude Code config.
-  let installed: { key: string; configPath: string } | null = null;
+  // Optionally splice directly into the user's interactive-client config(s).
+  const installed: { client: string; key: string; configPath: string }[] = [];
   if (args.claudeCode) {
     const out = installMcpEntry({
       apiUrl,
@@ -64,7 +67,16 @@ export async function runNewAgent(
       agentId: r.agent_id,
       displayName: args.name,
     });
-    installed = { key: out.key, configPath: out.configPath };
+    installed.push({ client: "claude-code", key: out.key, configPath: out.configPath });
+  }
+  if (args.codex) {
+    const out = installCodexMcpEntry({
+      apiUrl,
+      agentToken: r.agent_token,
+      agentId: r.agent_id,
+      displayName: args.name,
+    });
+    installed.push({ client: "codex", key: out.key, configPath: out.configPath });
   }
 
   if (args.json) {
@@ -74,7 +86,7 @@ export async function runNewAgent(
           agent_id: r.agent_id,
           agent_token: r.agent_token,
           mcp_config: buildMcpConfig({ apiUrl, agentToken: r.agent_token }),
-          ...(installed ? { claude_code_install: installed } : {}),
+          ...(installed.length > 0 ? { client_installs: installed } : {}),
         },
         null,
         2,
@@ -87,12 +99,13 @@ export async function runNewAgent(
   deps.log(`  agent_id: ${pc.bold(r.agent_id)}`);
   deps.log(``);
 
-  if (installed) {
-    deps.log(
-      pc.green(
-        `✓ Added to ${installed.configPath} as "${installed.key}". Run /mcp → Reconnect in Claude Code.`,
-      ),
-    );
+  if (installed.length > 0) {
+    for (const i of installed) {
+      const reconnect = i.client === "claude-code"
+        ? "Run /mcp → Reconnect in Claude Code."
+        : "Restart your Codex session to pick up the new server.";
+      deps.log(pc.green(`✓ Added to ${i.configPath} as "${i.key}". ${reconnect}`));
+    }
   } else {
     deps.log(pc.yellow(pc.bold(`IMPORTANT: paste the following into your MCP client config NOW.`)));
     deps.log(pc.yellow(`The agent_token below is shown ONCE and cannot be recovered.`));
@@ -101,7 +114,7 @@ export async function runNewAgent(
     deps.log(``);
     deps.log(
       pc.dim(
-        `tip: pass --claude-code next time and the CLI will splice the entry into ~/.claude.json for you.`,
+        `tip: pass --claude-code or --codex next time and the CLI will splice the entry for you.`,
       ),
     );
   }
