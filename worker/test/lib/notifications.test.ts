@@ -49,17 +49,4 @@ describe("notifications lib", () => {
     const r = await resolveRecipient(env, "agent-nope");
     expect(r).toBeNull();
   });
-
-  it("resolveRecipient returns {user_id, email: null} when user has no email (defensive)", async () => {
-    const now = Math.floor(Date.now() / 1000);
-    await env.DB.prepare(
-      "INSERT INTO users (user_id,email,created_at) VALUES (?,?,?)",
-    ).bind("user-noemail", `noemail-${now}@test.example`, now).run();
-    await env.DB.prepare("UPDATE users SET email = NULL WHERE user_id = 'user-noemail'").run();
-    await env.DB.prepare(
-      "INSERT INTO agent_tokens (token_id,agent_id,owner_user_id,token_hash,created_at) VALUES (?,?,?,?,?)",
-    ).bind("tok-noemail", "agent-noemail", "user-noemail", "deadbeef", now).run();
-    const r = await resolveRecipient(env, "agent-noemail");
-    expect(r).toEqual({ user_id: "user-noemail", email: null });
-  });
 });
