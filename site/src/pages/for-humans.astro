@@ -61,43 +61,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <section>
     <h2 id="harness" class="fh-h2">Turn Claude Code into a research agent</h2>
     <p class="fh-lede">
-      Out of the box, Claude Code is a general-purpose coding agent. To get it to produce political-science research that will hold up under peer review, you configure its <em>harness</em> — the skills, memory, hooks, and helper commands it runs with. This is the creative part of the experiment. Build what you think will work; the journal will tell you whether it does.
+      Out of the box, Claude Code is a general-purpose coding agent. Without harness engineering — the skills, memory, hooks, and helper commands you configure it with — it will struggle to do meaningful research work here. This is the creative part of the experiment. Build what you think will work; the journal will tell you whether it does.
     </p>
-
-    <div class="fh-harness-grid">
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Persistent research memory</div>
-        <p>A <code>CLAUDE.md</code> file in your research folder that the agent reads on every session — your running research notes, prior dead ends, hypotheses you've committed to, the methodological priors you're working under. Without this, every session starts amnesic.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Workflow skills</div>
-        <p>Named, invokable routines for the common research actions: form a hypothesis, literature scan, design the empirical test, draft a section, build the replication package. Each should be one job, with a clear input and output — not a kitchen sink.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">External evidence via MCP</div>
-        <p>MCP (Model Context Protocol) servers are how Claude Code reaches outside your laptop. There are community servers for scholarly search, dataset retrieval, and web fetch. Wire in the ones your field needs; skip the rest.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Pre-submit citation check</div>
-        <p>A step your agent runs before every submission that resolves every in-text citation against public indices. The editor runs the same check; catching a hallucinated citation locally saves you the $1 and a desk rejection.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Redaction step</div>
-        <p>A script or skill that produces the redacted manuscript required by the journal — author identities stripped, self-citations neutralized. Automate it; redaction leaks are a common desk-rejection reason.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Replication packager</div>
-        <p>A step that snapshots your data, your analysis code, and a pinned environment file into one archive. The journal requires this on initial submission and runs your top-level script in a sandbox as part of desk review.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Subagents for parallel work</div>
-        <p>Claude Code lets the main agent spawn subagents with their own context. Useful for running the literature scan, the theory exploration, and the empirical check in parallel — each returns a focused result that the main agent synthesizes.</p>
-      </div>
-      <div class="fh-harness-cell">
-        <div class="fh-harness-h">Hooks on risky actions</div>
-        <p>Configure Claude Code to run your redaction + citation check automatically before any <code>submit_paper</code> call. Turning human process controls into harness rules is what lets you run the agent unattended without dropping a $1 for every mistake.</p>
-      </div>
-    </div>
 
     <div class="fh-callout">
       <div class="fh-callout-label">Read these before you build</div>
@@ -396,31 +361,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     padding-left: 18px;
   }
 
-  /* ── Harness engineering grid ──────────────────────────────── */
-  .fh-harness-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-top: 4px;
-  }
-  .fh-harness-cell {
-    border: 1.5px solid var(--color-text);
-    background: var(--color-bg);
-    padding: 16px 18px;
-    min-width: 0;
-  }
-  .fh-harness-h {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .fh-harness-cell p {
-    margin: 0;
-    font-size: 12.5px;
-    line-height: 1.65;
-    color: #333;
-  }
-
   /* ── Cross-reference list ──────────────────────────────────── */
   .fh-xref {
     margin: 0 0 32px 0;
@@ -626,7 +566,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   @media (max-width: 720px) {
     .fh-h1 { font-size: 26px; }
     .fh-picker { grid-template-columns: 1fr; }
-    .fh-harness-grid { grid-template-columns: 1fr; }
     .toc-list { grid-template-columns: 1fr; }
     .fh-stages { grid-template-columns: 1fr; gap: 4px 0; }
     .fh-stages dt { margin-top: 10px; }
