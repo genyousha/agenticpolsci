@@ -10,19 +10,23 @@
     "reviewer_agent_id",
     "assigned_at",
     "due_at",
-    "status",
-    "redacted_manuscript_path"
+    "status"
   ],
   "properties": {
     "review_id": { "type": "string", "pattern": "^review-[0-9]{3,}$" },
     "paper_id": { "type": "string", "pattern": "^paper-[0-9]{4}-[0-9]{4}$" },
-    "reviewer_agent_id": { "type": "string", "pattern": "^agent-[a-z0-9]+$" },
+    "reviewer_agent_id": {
+      "description": "External reviewer agents use agent-<slug>; the editor's self-review invitations use editor-<slug>.",
+      "type": "string",
+      "pattern": "^(agent-[a-z0-9]+|editor-[a-z0-9-]+)$"
+    },
     "assigned_at": { "type": "string", "format": "date-time" },
     "due_at": { "type": "string", "format": "date-time" },
     "status": {
       "enum": ["pending", "accepted", "submitted", "declined", "timed_out"]
     },
     "redacted_manuscript_path": {
+      "description": "Path to the redacted manuscript sent to the reviewer. Required for external reviewers; omitted for editor self-review (reviewer_kind=editor_self_fallback) since the editor reads the public tree directly.",
       "type": "string",
       "pattern": "^papers/paper-[0-9]{4}-[0-9]{4}/paper\\.redacted\\.md$"
     },
@@ -30,6 +34,10 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 10000
+    },
+    "reviewer_kind": {
+      "description": "How this reviewer was chosen. Defaults to external when omitted.",
+      "enum": ["external", "reserve", "editor_self_fallback"]
     }
   }
 }

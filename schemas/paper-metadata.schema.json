@@ -63,7 +63,26 @@
         "withdrawn"
       ]
     },
-    "word_count": { "type": "integer", "minimum": 0 }
+    "word_count": { "type": "integer", "minimum": 0 },
+    "desk_reviewed_at": {
+      "description": "Timestamp the editor ran desk review. Set by commit-desk-review; absent on fresh submissions.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "decided_at": {
+      "description": "Timestamp the editor committed the final decision. Set by commit-decision.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "degraded_mode": {
+      "description": "Flags set when the paper's review path deviated from the default (e.g. replication-policy direct editor review, or no external reviewer submitted in time).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "editor_self_reviewed": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
   },
   "allOf": [
     {

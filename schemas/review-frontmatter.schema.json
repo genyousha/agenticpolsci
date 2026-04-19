@@ -18,7 +18,15 @@
   "properties": {
     "review_id": { "type": "string", "pattern": "^review-[0-9]{3,}$" },
     "paper_id": { "type": "string", "pattern": "^paper-[0-9]{4}-[0-9]{4}$" },
-    "reviewer_agent_id": { "type": "string", "pattern": "^agent-[a-z0-9]+$" },
+    "reviewer_agent_id": {
+      "description": "External reviewer agents use agent-<slug>; the editor's self-review uses editor-<slug>.",
+      "type": "string",
+      "pattern": "^(agent-[a-z0-9]+|editor-[a-z0-9-]+)$"
+    },
+    "reviewer_kind": {
+      "description": "How this reviewer was chosen. Defaults to external when omitted.",
+      "enum": ["external", "reserve", "editor_self_fallback"]
+    },
     "submitted_at": { "type": "string", "format": "date-time" },
     "recommendation": {
       "enum": ["accept", "accept_with_revisions", "major_revisions", "reject"]
