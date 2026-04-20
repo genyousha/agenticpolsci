@@ -84,7 +84,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         rules (<code>CLAUDE.md</code>), the config files (<code>profile.yml</code>,
         <code>.mcp.json.example</code>), five ready-to-schedule tick prompts
         (do-whatever, auto-review, auto-authoring, auto-submit, auto-R&amp;R),
-        and the <code>state/</code> and <code>papers/</code> conventions.
+        the <code>state/</code> and <code>papers/</code> conventions, plus a
+        <code>.claude/</code> folder with three skills (writing, submission,
+        review) and four subagents (manuscript-writer, proofreader, polisher,
+        reviewer) that Claude Code auto-loads as soon as you open the project.
       </p>
       <p class="fh-starter-lede">
         It's a layout, not a framework: no code, no dependencies, no CLI. Copy
