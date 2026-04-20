@@ -236,15 +236,162 @@ describe("submit_paper", () => {
       { kind: "agent", agent_id, owner_user_id: user_id },
       validInput,
     );
+    // Second submission by the same agent requires force_new — the first
+    // paper is now in-flight (pending) and the in-flight guard would
+    // otherwise block.
     const r2 = await submitPaper(
       env,
       { kind: "agent", agent_id, owner_user_id: user_id },
-      validInput,
+      { ...validInput, force_new: true },
     );
     if (!r1.ok || !r2.ok) throw new Error("both should succeed");
     expect(r1.value.paper_id).not.toBe(r2.value.paper_id);
     const seq1 = Number(r1.value.paper_id.slice(-4));
     const seq2 = Number(r2.value.paper_id.slice(-4));
     expect(seq2).toBe(seq1 + 1);
+  });
+
+  describe("in-flight guard: submit_paper without revises_paper_id while an in-flight paper exists", () => {
+    it.each(["pending", "revise", "in_review", "decision_pending"])(
+      "rejects with conflict when the same agent already has a paper in status=%s",
+      async (status) => {
+        const mock = installGithubMock();
+        restore = mock.restore;
+        const { user_id } = await seedUser({ balance_cents: 500 });
+        const { agent_id } = await seedAgent({ owner_user_id: user_id });
+
+        // First submit lands a real paper in pending, then we force the
+        // ledger-indexed metadata to the status under test. This mirrors
+        // the state after an editor decision or review assignment.
+        const first = await submitPaper(
+          env,
+          { kind: "agent", agent_id, owner_user_id: user_id },
+          validInput,
+        );
+        if (!first.ok) throw new Error("seed submit should succeed");
+        const priorPath = `papers/${first.value.paper_id}/metadata.yml`;
+        const priorFile = mock.files.get(priorPath)!;
+        mock.files.set(priorPath, {
+          ...priorFile,
+          content: priorFile.content.replace(
+            /^status: pending$/m,
+            `status: ${status}`,
+          ),
+        });
+
+        const second = await submitPaper(
+          env,
+          { kind: "agent", agent_id, owner_user_id: user_id },
+          validInput,
+        );
+        expect(second.ok).toBe(false);
+        if (second.ok) return;
+        expect(second.error.code).toBe("conflict");
+        expect(second.error.message).toContain(first.value.paper_id);
+        expect(second.error.message).toContain(status);
+        expect(second.error.message).toContain("update_paper");
+        expect(second.error.message).toContain("force_new: true");
+
+        // Balance not double-debited; no second ledger row.
+        const bal = await env.DB
+          .prepare("SELECT balance_cents FROM balances WHERE user_id = ?")
+          .bind(user_id)
+          .first<{ balance_cents: number }>();
+        expect(bal?.balance_cents).toBe(400); // 500 - 100 for the first submit
+        const led = await env.DB
+          .prepare("SELECT COUNT(*) as n FROM submissions_ledger WHERE agent_id = ?")
+          .bind(agent_id)
+          .first<{ n: number }>();
+        expect(led?.n).toBe(1);
+      },
+    );
+
+    it.each(["accepted", "rejected", "desk_rejected", "withdrawn"])(
+      "allows a new submit when the agent's prior paper is terminal (status=%s)",
+      async (status) => {
+        const mock = installGithubMock();
+        restore = mock.restore;
+        const { user_id } = await seedUser({ balance_cents: 500 });
+        const { agent_id } = await seedAgent({ owner_user_id: user_id });
+
+        const first = await submitPaper(
+          env,
+          { kind: "agent", agent_id, owner_user_id: user_id },
+          validInput,
+        );
+        if (!first.ok) throw new Error("seed submit should succeed");
+        const priorPath = `papers/${first.value.paper_id}/metadata.yml`;
+        const priorFile = mock.files.get(priorPath)!;
+        mock.files.set(priorPath, {
+          ...priorFile,
+          content: priorFile.content.replace(
+            /^status: pending$/m,
+            `status: ${status}`,
+          ),
+        });
+
+        const second = await submitPaper(
+          env,
+          { kind: "agent", agent_id, owner_user_id: user_id },
+          validInput,
+        );
+        expect(second.ok).toBe(true);
+      },
+    );
+
+    it("allows submit when force_new: true is set despite an in-flight paper", async () => {
+      const mock = installGithubMock();
+      restore = mock.restore;
+      const { user_id } = await seedUser({ balance_cents: 500 });
+      const { agent_id } = await seedAgent({ owner_user_id: user_id });
+
+      const first = await submitPaper(
+        env,
+        { kind: "agent", agent_id, owner_user_id: user_id },
+        validInput,
+      );
+      if (!first.ok) throw new Error("seed submit should succeed");
+
+      const second = await submitPaper(
+        env,
+        { kind: "agent", agent_id, owner_user_id: user_id },
+        { ...validInput, force_new: true },
+      );
+      expect(second.ok).toBe(true);
+      if (!second.ok) return;
+      expect(second.value.paper_id).not.toBe(first.value.paper_id);
+
+      // Both fees debited (500 - 200 = 300).
+      const bal = await env.DB
+        .prepare("SELECT balance_cents FROM balances WHERE user_id = ?")
+        .bind(user_id)
+        .first<{ balance_cents: number }>();
+      expect(bal?.balance_cents).toBe(300);
+    });
+
+    it("ignores in-flight papers authored by a different agent", async () => {
+      const mock = installGithubMock();
+      restore = mock.restore;
+      // Agent A has an in-flight paper.
+      const { user_id: userA } = await seedUser({ balance_cents: 500 });
+      const { agent_id: agentA } = await seedAgent({ owner_user_id: userA });
+      const firstA = await submitPaper(
+        env,
+        { kind: "agent", agent_id: agentA, owner_user_id: userA },
+        validInput,
+      );
+      if (!firstA.ok) throw new Error("seed submit should succeed");
+
+      // Agent B submits their own first paper — should succeed without
+      // force_new, because the guard is per-agent.
+      const { user_id: userB } = await seedUser({ balance_cents: 500 });
+      const { agent_id: agentB } = await seedAgent({ owner_user_id: userB });
+      const firstB = await submitPaper(
+        env,
+        { kind: "agent", agent_id: agentB, owner_user_id: userB },
+        validInput,
+      );
+      expect(firstB.ok).toBe(true);
+    });
   });
 });

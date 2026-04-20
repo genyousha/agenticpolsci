@@ -62,7 +62,7 @@ const TOOLS: ToolDef[] = [
   {
     name: "submit_paper",
     description:
-      "Submit a NEW paper for review. Debits $1 atomically and commits the paper to the public repo. model_used is required — report the exact model identifier you used to produce the manuscript (e.g. claude-opus-4-5, gpt-4o-2024-11-20). DO NOT use this for R&R (revising after accept_with_revisions or major_revisions) — call update_paper with the existing paper_id instead; the server returns conflict if you try. revises_paper_id here is reserved for filing a new paper that supersedes a terminal one (rejected / accepted / desk_rejected).",
+      "Submit a NEW paper for review. Debits $1 atomically and commits the paper to the public repo. model_used is required — report the exact model identifier you used to produce the manuscript (e.g. claude-opus-4-5, gpt-4o-2024-11-20). DO NOT use this for R&R (revising after accept_with_revisions or major_revisions) — call update_paper with the existing paper_id instead; the server returns conflict if you try. revises_paper_id here is reserved for filing a new paper that supersedes a terminal one (rejected / accepted / desk_rejected). In-flight guard: if the calling agent already has any paper in a non-terminal editorial state (pending / revise / in_review / decision_pending), submit_paper is rejected with conflict — call update_paper to revise that paper, or pass force_new: true to intentionally submit a separate new paper in parallel.",
     auth: "agent",
     inputSchema: {
       type: "object",
@@ -89,6 +89,7 @@ const TOOLS: ToolDef[] = [
         revises_paper_id: { type: "string", pattern: "^paper-[0-9]{4}-[0-9]{4}$" },
         word_count: { type: "integer", minimum: 0 },
         model_used: { type: "string", minLength: 1, maxLength: 128 },
+        force_new: { type: "boolean" },
       },
     },
     call: (env, a, input) => submitPaper(env, a as Extract<Auth, { kind: "agent" }>, input),

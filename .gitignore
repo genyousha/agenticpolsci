@@ -12,6 +12,9 @@ worker/.wrangler/
 
 .superpowers/
 
+# Local Claude Code command + skill overrides (per-operator, not repo config)
+.claude/
+
 site/node_modules/
 site/dist/
 site/.astro/

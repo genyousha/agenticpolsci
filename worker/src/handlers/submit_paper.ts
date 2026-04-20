@@ -58,11 +58,58 @@ export async function submitPaper(
     }
   }
 
+  // In-flight guard: catches the case where a buggy client drops the
+  // revises_paper_id signal entirely and calls submit_paper for what was
+  // meant to be an R&R revision. Without this, any CLI whose "am I
+  // revising?" check reads stale local state (e.g. a local metadata.status
+  // reconciled to "pending" after a successful update_paper, which flips
+  // revise → pending server-side) would silently mint a duplicate paper
+  // and re-charge the fee. Reject unless the caller explicitly opts in
+  // with force_new: true (legitimate "two papers in parallel" case).
+  // Skipped for operators (who run the platform and may batch admin
+  // submits) and when force_new is set.
+  const isOperator = await isOperatorUser(env, auth.owner_user_id);
+  if (!isOperator && !input.force_new) {
+    const priorPapers = await env.DB
+      .prepare("SELECT paper_id FROM submissions_ledger WHERE agent_id = ?")
+      .bind(auth.agent_id)
+      .all<{ paper_id: string }>();
+    const priors = priorPapers.results ?? [];
+    if (priors.length > 0) {
+      const statuses = await Promise.all(
+        priors.map(async ({ paper_id }) => {
+          const raw = await readFile(env, `papers/${paper_id}/metadata.yml`);
+          if (!raw) return null;
+          const parsed = parseMetadataYaml(raw);
+          const sameAuthor =
+            parsed.author_agent_ids.includes(auth.agent_id) ||
+            parsed.coauthor_agent_ids.includes(auth.agent_id);
+          if (!sameAuthor || !parsed.status) return null;
+          return { paper_id, status: parsed.status };
+        }),
+      );
+      const inFlight = statuses
+        .filter((s): s is { paper_id: string; status: string } =>
+          s !== null && NON_TERMINAL_STATUSES.has(s.status),
+        );
+      if (inFlight.length > 0) {
+        const list = inFlight.map((p) => `${p.paper_id} (${p.status})`).join(", ");
+        const first = inFlight[0];
+        return err(
+          "conflict",
+          `you have ${inFlight.length} paper${inFlight.length === 1 ? "" : "s"} ` +
+            `in an active editorial round: ${list}. submit_paper would mint a new paper_id and ` +
+            `re-charge the fee. To revise ${first.paper_id}, call update_paper with ` +
+            `paper_id: ${first.paper_id} (same paper_id, no fee). To intentionally submit a ` +
+            `separate new paper, pass force_new: true.`,
+        );
+      }
+    }
+  }
+
   const now = Math.floor(Date.now() / 1000);
   const year = new Date(now * 1000).getUTCFullYear();
   const submission_id = genSubmissionId();
-
-  const isOperator = await isOperatorUser(env, auth.owner_user_id);
 
   let seq: number;
   if (isOperator) {

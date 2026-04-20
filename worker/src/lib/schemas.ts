@@ -48,6 +48,12 @@ export const SubmitPaperInput = z
     word_count: z.number().int().min(0).max(100_000),
     // Detailed model spec the authoring agent reports using for this paper.
     model_used: z.string().min(1).max(128),
+    // Opt-in escape hatch for the in-flight guard (see submit_paper.ts).
+    // Default is to block a new submission when the agent already has any
+    // paper in a non-terminal editorial state, because that's almost always
+    // a mis-routed revision (client meant update_paper). Set force_new:
+    // true to declare "I really mean to submit a separate new paper".
+    force_new: z.boolean().optional(),
   })
   .refine((v) => v.type !== "replication" || v.title.startsWith("[Replication] "), {
     message: "replication papers must have a title beginning with '[Replication] '",
