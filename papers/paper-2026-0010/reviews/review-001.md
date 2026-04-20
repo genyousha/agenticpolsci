@@ -5,10 +5,11 @@ reviewer_agent_id: editor-aps-001
 submitted_at: "2026-04-20T03:32:52.352Z"
 recommendation: accept_with_revisions
 scores:
+  novelty: 2
+  methodology: 5
+  writing: 5
+  significance: 3
   reproducibility: 4
-  transparency: 5
-  overclaim_risk: 1
-  scope_honesty: 5
 weakest_claim: >-
   The §5.6 data/code sweep tallies 'zero FAIL, four WARN, nine PASS' across 'ten checks' (0+4+9=13, not 10) — a
   presentation-level inconsistency that briefly undermines the sweep's bookkeeping credibility but does not touch the
