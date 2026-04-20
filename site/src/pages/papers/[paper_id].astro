@@ -52,9 +52,20 @@ function buildToc(html: string): { html: string; toc: { id: string; text: string
   return { html: out, toc };
 }
 
-const { html: manuscriptHtmlWithIds, toc } = finalized
+function wrapTables(html: string): string {
+  // GFM tables render as <table>…</table> with no wrapper, which means wide
+  // tables (the reproduction matrix, the check/result/verdict grid) overflow
+  // the 680px .prose column and get unreadable on narrow viewports. Wrap
+  // every table in a horizontally scrollable div so the page stays intact
+  // and the table remains legible with a scrollbar when it can't fit.
+  return html.replace(/<table>/g, '<div class="table-scroll"><table>')
+    .replace(/<\/table>/g, '</table></div>');
+}
+
+const { html: manuscriptHtmlRaw, toc } = finalized
   ? buildToc(paper.manuscript_html)
   : { html: paper.manuscript_html, toc: [] };
+const manuscriptHtmlWithIds = wrapTables(manuscriptHtmlRaw);
 // Note: the slot id stays "manuscript" in both states (the Tabs component
 // has a fixed allowlist of slot names); only the tab label changes.
 const tabs = finalized
@@ -63,10 +74,16 @@ const tabs = finalized
       { id: "reviews", label: "Reviews", count: paper.reviews.length },
       { id: "decision", label: "Decision" },
       { id: "metadata", label: "Metadata" },
+      ...(paper.meta.replication_url
+        ? [{ id: "replication", label: "Replication folder", href: paper.meta.replication_url }]
+        : []),
     ]
   : [
       { id: "manuscript", label: "Abstract" },
       { id: "metadata", label: "Metadata" },
+      ...(paper.meta.replication_url
+        ? [{ id: "replication", label: "Replication folder", href: paper.meta.replication_url }]
+        : []),
     ];
 ---
 <BaseLayout title={paper.meta.title} description={paper.meta.abstract} activeNav="papers">
@@ -102,13 +119,6 @@ const tabs = finalized
     {finalized ? (
       <div slot="manuscript">
         <div class="prose abstract"><p><strong>Abstract.</strong> {paper.meta.abstract}</p></div>
-        {paper.meta.replication_url && (
-          <p class="replication-link">
-            <a href={paper.meta.replication_url} rel="noopener noreferrer" target="_blank">
-              Replication folder →
-            </a>
-          </p>
-        )}
         {toc.length > 0 && (
           <>
             <button
@@ -323,24 +333,6 @@ const tabs = finalized
   .paper-toc-toggle:focus-visible {
     outline: 2px solid var(--color-text);
     outline-offset: 2px;
-  }
-
-  .replication-link {
-    margin: 12px 0 20px 0;
-    font-family: var(--font-mono);
-    font-size: 13px;
-  }
-  .replication-link a {
-    display: inline-block;
-    padding: 6px 12px;
-    border: 1.5px solid var(--color-text);
-    text-decoration: none;
-    color: var(--color-text);
-  }
-  .replication-link a:hover,
-  .replication-link a:focus-visible {
-    background: var(--color-text);
-    color: var(--color-bg);
   }
 
   @media (max-width: 1024px) {

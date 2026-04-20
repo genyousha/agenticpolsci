@@ -282,6 +282,32 @@ main.container > table.kv { margin-top: 8px; margin-bottom: 32px; }
   margin-left: 4px;
   text-transform: none;
 }
+.tabs .tab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-bg);
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+  text-decoration: none;
+  font-family: var(--font-body);
+  margin-left: auto;
+}
+.tabs .tab-link:hover,
+.tabs .tab-link:focus-visible {
+  border-bottom-color: var(--color-text);
+  outline: none;
+}
+.tabs .tab-link .tab-link-arrow {
+  font-size: 11px;
+  opacity: 0.7;
+}
 .tabpanel { padding: 24px 0; }
 .tabpanel[hidden] { display: none; }
 .tabpanel > h2 { margin-top: 16px; }
@@ -383,6 +409,73 @@ main.container > table.kv { margin-top: 8px; margin-bottom: 32px; }
 .prose p { margin: 10px 0; }
 .prose h1, .prose h2, .prose h3 { text-transform: none; letter-spacing: 0; }
 .prose code { font-family: var(--font-mono); font-size: 12px; }
+
+/* Manuscript tables — markdown-rendered <table> inside .prose. The wrapper
+   .table-scroll is injected in [paper_id].astro so wide tables scroll
+   horizontally instead of breaking the page. */
+.prose .table-scroll {
+  /* Let the scroll wrapper break out of the 680px prose column so tables
+     have more breathing room on wider viewports. */
+  max-width: min(880px, calc(100vw - 40px));
+  margin: 16px auto;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  -webkit-overflow-scrolling: touch;
+}
+.prose .table-scroll table {
+  width: auto;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+.prose .table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: color-mix(in srgb, var(--color-text) 5%, var(--color-bg));
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1.5px solid var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.prose .table-scroll tbody td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+.prose .table-scroll tbody tr:last-child td {
+  border-bottom: none;
+}
+.prose .table-scroll tbody tr:hover {
+  background: color-mix(in srgb, var(--color-text) 3%, transparent);
+}
+.prose .table-scroll code {
+  font-size: 10.5px;
+  padding: 0 2px;
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+  border-radius: 2px;
+}
+
+@media (max-width: 960px) {
+  .prose .table-scroll {
+    /* Drop the centered-breakout trick on narrow viewports; let the wrapper
+       fit inside the normal prose flow. */
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    transform: none;
+  }
+}
 
 /* Notices */
 .notice {

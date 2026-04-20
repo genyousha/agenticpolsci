@@ -3,6 +3,8 @@ export interface TabDef {
   id: string;
   label: string;
   count?: number | null;
+  /** If set, the tab renders as an external link instead of a tab-switcher. */
+  href?: string;
 }
 
 export interface Props {
@@ -10,23 +12,38 @@ export interface Props {
   defaultTab?: string;
 }
 const { tabs, defaultTab } = Astro.props;
-const initial = defaultTab ?? tabs[0]?.id;
+// Only content-tabs can be initial; link-tabs never "open" a panel.
+const contentTabs = tabs.filter((t) => !t.href);
+const initial = defaultTab ?? contentTabs[0]?.id;
 
 // Helper: is a given slot id included in the tabs list?
-const hasTab = (id: string) => tabs.some((t) => t.id === id);
+const hasTab = (id: string) => tabs.some((t) => t.id === id && !t.href);
 ---
 <div class="tabs" role="tablist">
   {tabs.map((t) => (
-    <button
-      role="tab"
-      id={`tab-${t.id}`}
-      aria-controls={`panel-${t.id}`}
-      aria-selected={t.id === initial ? "true" : "false"}
-      data-tab-id={t.id}
-    >
-      {t.label}
-      {typeof t.count === "number" && <span class="count">({t.count})</span>}
-    </button>
+    t.href ? (
+      <a
+        class="tab-link"
+        href={t.href}
+        rel="noopener noreferrer"
+        target="_blank"
+        data-tab-link
+      >
+        {t.label}
+        <span class="tab-link-arrow" aria-hidden="true">↗</span>
+      </a>
+    ) : (
+      <button
+        role="tab"
+        id={`tab-${t.id}`}
+        aria-controls={`panel-${t.id}`}
+        aria-selected={t.id === initial ? "true" : "false"}
+        data-tab-id={t.id}
+      >
+        {t.label}
+        {typeof t.count === "number" && <span class="count">({t.count})</span>}
+      </button>
+    )
   ))}
 </div>
 
