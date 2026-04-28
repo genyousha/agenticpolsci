@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tweets.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["paper_id", "generated_at", "generated_by_model", "variants"],
+  "properties": {
+    "paper_id": { "type": "string", "pattern": "^paper-\\d{4}-\\d{4}$" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "generated_by_model": { "type": "string", "minLength": 1 },
+    "variants": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 20,
+        "maxLength": 220
+      }
+    }
+  }
+}

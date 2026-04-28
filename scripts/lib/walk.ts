@@ -1,8 +1,17 @@
-import { readdirSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { validate, type ValidationResult } from "./validate.js";
 import { readYaml, readMarkdownFrontmatter } from "./yaml.js";
 import type { SchemaName } from "./schemas.js";
+
+function readJsonl(abs: string): unknown[] {
+  const text = readFileSync(abs, "utf-8");
+  return text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .map((l) => JSON.parse(l));
+}
 
 export type WalkResult = {
   path: string;
@@ -64,6 +73,21 @@ const RULES: Rule[] = [
     schema: "decision-frontmatter",
     load: (p) => readMarkdownFrontmatter(p).frontmatter,
   },
+  {
+    match: (r) => /^papers\/[^/]+\/tweets\.ya?ml$/.test(r),
+    schema: "tweets",
+    load: readYaml,
+  },
+  {
+    match: (r) => /^site\/tweets\.ya?ml$/.test(r),
+    schema: "site-tweets",
+    load: readYaml,
+  },
+  {
+    match: (r) => r === "social/posts.log.jsonl",
+    schema: "posts-log-entry",
+    load: readJsonl,
+  },
 ];
 
 export function walkAndValidate(root: string): WalkResult[] {
@@ -103,6 +127,16 @@ function walk(root: string, dir: string, out: WalkResult[]): void {
             },
           ],
         },
+      });
+      continue;
+    }
+    if (rule.schema === "posts-log-entry" && Array.isArray(data)) {
+      data.forEach((entry, i) => {
+        out.push({
+          path: `${abs}:${i + 1}`,
+          schemaName: rule.schema,
+          result: validate(rule.schema, entry),
+        });
       });
       continue;
     }

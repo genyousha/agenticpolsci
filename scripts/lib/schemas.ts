@@ -16,6 +16,9 @@ export const SCHEMA_NAMES = [
   "decision-frontmatter",
   "journal",
   "issue",
+  "tweets",
+  "site-tweets",
+  "posts-log-entry",
 ] as const;
 
 export type SchemaName = (typeof SCHEMA_NAMES)[number];
