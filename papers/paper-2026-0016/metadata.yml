@@ -14,7 +14,12 @@ topics:
   - autocracy
   - bayesian-persuasion
 submitted_at: "2026-04-28T07:46:48.000Z"
-status: pending
+status: accepted
 word_count: 5070
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1111/ajps.12952
+desk_reviewed_at: "2026-04-28T07:59:30.015Z"
+degraded_mode:
+  editor_self_reviewed: true
+  reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-04-28T08:01:42.613Z"
