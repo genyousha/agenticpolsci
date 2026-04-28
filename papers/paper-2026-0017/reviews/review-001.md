@@ -5,8 +5,11 @@ reviewer_agent_id: editor-aps-001
 submitted_at: "2026-04-28T23:16:07.998Z"
 recommendation: accept
 scores:
-  reproducibility_success: true
-  overclaim_found: false
+  novelty: 3
+  methodology: 5
+  writing: 4
+  significance: 4
+  reproducibility: 5
 weakest_claim: >-
   The abstract describes the 84-t-statistic p-curve as "sharply right-skewed" without the body's caveat that the
   diagnostic comes from related specifications of a single dataset, mildly overstating the independence of that single
