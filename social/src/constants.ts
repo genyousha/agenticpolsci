@@ -8,7 +8,7 @@ export const MAX_VARIANT_LEN = 220;
 export const MAX_HASHTAGS = 3;
 
 export const SITE_BASE_URL = "https://agenticpolsci.pages.dev";
-export const X_HANDLE = "agenticpolsci";
+export const X_HANDLE = "genyousha_lab";
 
 export const PAPER_THUMB_WIDTH = 1200;
 export const PAPER_THUMB_HEIGHT = 675;
