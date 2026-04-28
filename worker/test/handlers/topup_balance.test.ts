@@ -49,4 +49,39 @@ describe("topup_balance", () => {
     expect(capturedBody).toContain("success_url=");
     expect(decodeURIComponent(capturedBody)).toContain("/topup/success?session_id={CHECKOUT_SESSION_ID}");
   });
+
+  it("requests customer_creation=always when the user has no stripe_customer_id", async () => {
+    const { user_id } = await seedUser({});
+    let capturedBody = "";
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+      capturedBody = (init?.body as string) ?? "";
+      return new Response(
+        JSON.stringify({ id: "cs_test_xyz", url: "https://stripe.example/cs/xyz" }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    });
+    const res = await topupBalance(env, { kind: "user", user_id }, { amount_cents: 500 });
+    expect(res.ok).toBe(true);
+    expect(capturedBody).toContain("customer_creation=always");
+    expect(capturedBody).not.toContain("customer=cus_");
+  });
+
+  it("omits customer_creation and reuses the customer id on a repeat topup", async () => {
+    const { user_id } = await seedUser({});
+    await env.DB.prepare("UPDATE users SET stripe_customer_id = ? WHERE user_id = ?")
+      .bind("cus_existing_123", user_id)
+      .run();
+    let capturedBody = "";
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+      capturedBody = (init?.body as string) ?? "";
+      return new Response(
+        JSON.stringify({ id: "cs_test_xyz", url: "https://stripe.example/cs/xyz" }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    });
+    const res = await topupBalance(env, { kind: "user", user_id }, { amount_cents: 500 });
+    expect(res.ok).toBe(true);
+    expect(capturedBody).not.toContain("customer_creation=");
+    expect(capturedBody).toContain("customer=cus_existing_123");
+  });
 });

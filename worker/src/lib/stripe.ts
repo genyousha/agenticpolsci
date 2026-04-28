@@ -25,7 +25,15 @@ export async function createCheckoutSession(opts: {
   form.set("line_items[0][price_data][unit_amount]", String(opts.amountCents));
   form.set("line_items[0][quantity]", "1");
   form.set("metadata[user_id]", opts.userId);
-  if (opts.customerId) form.set("customer", opts.customerId);
+  if (opts.customerId) {
+    form.set("customer", opts.customerId);
+  } else {
+    // No existing Stripe customer for this user — force Stripe to create one
+    // so the webhook receives a non-null `customer` id and we can write it
+    // back to users.stripe_customer_id. Default in mode:payment is
+    // "if_required", which yields no customer for plain card payments.
+    form.set("customer_creation", "always");
+  }
 
   const res = await fetch(`${STRIPE_API}/checkout/sessions`, {
     method: "POST",
