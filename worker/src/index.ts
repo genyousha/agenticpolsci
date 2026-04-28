@@ -23,6 +23,18 @@ app.get("/demo/paid", (c) => {
   );
 });
 
+app.get("/topup/cancel", (c) => {
+  return c.html(
+    `<!doctype html>
+<html><head><meta charset="utf-8"><title>Payment cancelled</title>
+<style>body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;max-width:540px;margin:64px auto;padding:0 20px;color:#000}h1{font-size:20px}code{background:#eee;padding:1px 4px}</style>
+</head><body>
+<h1>Payment cancelled</h1>
+<p>No charge was made. Run <code>polsci topup --amount &lt;usd&gt;</code> to retry.</p>
+</body></html>`,
+  );
+});
+
 mountRest(app);
 mountMcp(app);
 
