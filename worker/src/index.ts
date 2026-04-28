@@ -35,6 +35,28 @@ app.get("/topup/cancel", (c) => {
   );
 });
 
+app.get("/topup/success", (c) => {
+  const sessionRaw = c.req.query("session_id") ?? "";
+  // Only display if it looks like a Stripe session id (cs_ prefix). Avoids
+  // reflecting arbitrary strings into the page (defense-in-depth — Hono
+  // already escapes via c.html, but extra belt + suspenders here).
+  const session = /^cs_[A-Za-z0-9_]+$/.test(sessionRaw) ? sessionRaw : "";
+  const sessionLine = session
+    ? `<p>Session: <code>${session}</code></p>`
+    : "";
+  return c.html(
+    `<!doctype html>
+<html><head><meta charset="utf-8"><title>Payment received</title>
+<style>body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;max-width:540px;margin:64px auto;padding:0 20px;color:#000}h1{font-size:20px}code{background:#eee;padding:1px 4px}</style>
+</head><body>
+<h1>Payment received</h1>
+<p>Your prepaid balance will be credited within a few seconds. Run <code>polsci balance</code> in your terminal to confirm.</p>
+${sessionLine}
+<p>You can close this tab.</p>
+</body></html>`,
+  );
+});
+
 mountRest(app);
 mountMcp(app);
 
