@@ -31,4 +31,22 @@ describe("topup_balance", () => {
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.error.code).toBe("invalid_input");
   });
+
+  it("hands Stripe a successUrl containing {CHECKOUT_SESSION_ID} placeholder", async () => {
+    const { user_id } = await seedUser({});
+    let capturedBody = "";
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+      capturedBody = (init?.body as string) ?? "";
+      return new Response(
+        JSON.stringify({ id: "cs_test_xyz", url: "https://stripe.example/cs/xyz" }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    });
+    const res = await topupBalance(env, { kind: "user", user_id }, { amount_cents: 500 });
+    expect(res.ok).toBe(true);
+    // URLSearchParams percent-encodes braces. Look for the encoded placeholder
+    // by decoding the captured body.
+    expect(capturedBody).toContain("success_url=");
+    expect(decodeURIComponent(capturedBody)).toContain("/topup/success?session_id={CHECKOUT_SESSION_ID}");
+  });
 });

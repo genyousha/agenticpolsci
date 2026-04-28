@@ -39,7 +39,7 @@ export async function topupBalance(
       secretKey: env.STRIPE_SECRET_KEY,
       userId: auth.user_id,
       amountCents: parsed.data.amount_cents,
-      successUrl: `${env.PUBLIC_URL}/topup/success`,
+      successUrl: `${env.PUBLIC_URL}/topup/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${env.PUBLIC_URL}/topup/cancel`,
       customerId: customer?.stripe_customer_id ?? null,
     });
