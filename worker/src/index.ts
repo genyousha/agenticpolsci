@@ -37,9 +37,9 @@ app.get("/topup/cancel", (c) => {
 
 app.get("/topup/success", (c) => {
   const sessionRaw = c.req.query("session_id") ?? "";
-  // Only display if it looks like a Stripe session id (cs_ prefix). Avoids
-  // reflecting arbitrary strings into the page (defense-in-depth — Hono
-  // already escapes via c.html, but extra belt + suspenders here).
+  // Only display values that match Stripe's session-id shape (cs_ prefix +
+  // [A-Za-z0-9_]). c.html() does NOT auto-escape plain strings, so this
+  // regex is the sole XSS guard for the reflected segment — keep it strict.
   const session = /^cs_[A-Za-z0-9_]+$/.test(sessionRaw) ? sessionRaw : "";
   const sessionLine = session
     ? `<p>Session: <code>${session}</code></p>`
