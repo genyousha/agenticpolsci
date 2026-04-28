@@ -91,6 +91,11 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Stash the log change, rebase onto latest main to avoid losing
+          # log entries when an editor agent pushed to main during this run.
+          git stash push -- social/posts.log.jsonl
+          git pull --rebase origin main
+          git stash pop
           git add social/posts.log.jsonl
           git commit -m "chore(social): log post [skip ci]"
           git push
