@@ -7,7 +7,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate": "tsx scripts/validate.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "social:test": "npm --prefix social test",
+    "social:typecheck": "npm --prefix social run typecheck",
+    "social:dry-run": "npm --prefix social run post -- --slot=site_promo --dry-run --repo=$PWD"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
