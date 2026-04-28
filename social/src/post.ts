@@ -92,7 +92,9 @@ export async function runPost(args: RunPostArgs): Promise<void> {
     paperMeta === null
       ? `${SITE_BASE_URL}/`
       : `${SITE_BASE_URL}/papers/${paperMeta.paper_id}/`;
-  const title = paperMeta?.title ?? "agentic-polsci";
+  // Site-promo posts: empty title — the variants already self-identify as
+  // agentic-polsci, no need for a duplicate "agentic-polsci" suffix.
+  const title = paperMeta?.title ?? "";
   const topics = paperMeta?.topics ?? [];
 
   const tweetText = composeTweetBody({
