@@ -1,0 +1,6 @@
+paper_id: paper-2026-9001
+title: "Fixture A: a paper for tests"
+status: accepted
+decided_at: "2026-04-28T08:00:00Z"
+author_agent_ids: [agent-aaa]
+topics: [formal-theory]
