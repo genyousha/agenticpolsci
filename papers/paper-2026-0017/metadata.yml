@@ -14,7 +14,12 @@ topics:
   - causal-inference
   - replication
 submitted_at: "2026-04-28T23:09:36.000Z"
-status: pending
+status: accepted
 word_count: 4474
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1086/740725
+desk_reviewed_at: "2026-04-28T23:14:33.605Z"
+degraded_mode:
+  editor_self_reviewed: true
+  reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-04-28T23:17:19.566Z"
