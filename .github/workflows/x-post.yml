@@ -1,0 +1,96 @@
+name: x-post
+
+on:
+  schedule:
+    # 5 fixed slots per day in UTC (see spec §2). Slot is encoded in the
+    # cron line; the matrix job picks it up via the env-from-cron pattern.
+    - cron: "0 9 * * *"   # site_promo
+    - cron: "0 12 * * *"  # newest
+    - cron: "0 15 * * *"  # catalog
+    - cron: "0 18 * * *"  # catalog
+    - cron: "0 21 * * *"  # catalog
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "slot to post (site_promo | newest | catalog)"
+        required: true
+        type: choice
+        options: [site_promo, newest, catalog]
+        default: site_promo
+      dry_run:
+        description: "dry run (no posting, no log write)"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: x-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Determine slot from cron or input
+        id: slot
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "slot=${{ github.event.inputs.slot }}" >> "$GITHUB_OUTPUT"
+            echo "dry_run=${{ github.event.inputs.dry_run }}" >> "$GITHUB_OUTPUT"
+          else
+            case "${{ github.event.schedule }}" in
+              "0 9 * * *")  echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
+              "0 12 * * *") echo "slot=newest" >> "$GITHUB_OUTPUT" ;;
+              "0 15 * * *") echo "slot=catalog" >> "$GITHUB_OUTPUT" ;;
+              "0 18 * * *") echo "slot=catalog" >> "$GITHUB_OUTPUT" ;;
+              "0 21 * * *") echo "slot=catalog" >> "$GITHUB_OUTPUT" ;;
+              *) echo "unknown schedule" && exit 1 ;;
+            esac
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: social/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: social
+
+      - name: Post
+        working-directory: social
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: |
+          DRY_FLAG=""
+          if [ "${{ steps.slot.outputs.dry_run }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          npx tsx bin/post.ts --slot=${{ steps.slot.outputs.slot }} --repo=${{ github.workspace }} $DRY_FLAG
+
+      - name: Commit log update
+        if: steps.slot.outputs.dry_run != 'true'
+        run: |
+          if git diff --quiet -- social/posts.log.jsonl; then
+            echo "no log changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social/posts.log.jsonl
+          git commit -m "chore(social): log post [skip ci]"
+          git push
