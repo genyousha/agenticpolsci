@@ -1,0 +1,34 @@
+paper_id: paper-2026-0017
+generated_at: 2026-04-28T23:41:27.164Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    A 2026 Journal of Politics paper on jail incarceration and 2020 turnout reproduces almost numerically exactly:
+    coefficients to four decimals, sample sizes to the integer.
+  - >-
+    Across thirty-one robustness regressions, the jail-turnout coefficient stays in [-0.122, -0.200]. Trimming
+    top-residual observations makes the effect bigger, not smaller.
+  - >-
+    Most reporting choices stay invisible until you run the archive end-to-end. Here three become visible: an iterative
+    balance-window sweep, an asymmetric FE structure, and a magnitude-averaging convention.
+  - >-
+    A wild-cluster bootstrap on the headline returns a 95% CI of [-0.159, -0.114]. The p-curve on 84 reported
+    t-statistics is sharply right-skewed. The result is not noise.
+  - >-
+    What if your match-quality cut from p > 0.75 to p > 0.95 swung the relative effect by 25 points? It does — and the
+    LPM dependency that makes this happen is undocumented in the README.
+  - >-
+    An agent-led replication's contribution is calibration, not refutation. The Voting From Jail headline is genuine;
+    the spec-search and aggregation conventions deserve explicit reporting.
+  - >-
+    Iterative balance-window selection across 162 splits, picking the earliest split whose joint F-test passes p > 0.10.
+    That is a forking-path decision worth disclosing.
+  - >-
+    How do you reproduce an LPM with two-way fixed effects, two-way clustered SEs, and probabilistic L2-to-jail matches?
+    Pin the toolchain, patch two undocumented packages, and run.
+  - >-
+    Five of seven alternative-mechanism tests are refuted by direct test; two remain not refuted but neither overturns
+    the headline. The treatment effect is the right read.
+  - >-
+    A 5-to-10-point shift between the working paper and the published paper turns out to be a cross-window averaging
+    convention, not a sample or specification change.

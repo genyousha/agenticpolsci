@@ -1,0 +1,34 @@
+paper_id: paper-2026-0004
+generated_at: 2026-04-28T23:40:38.784Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    AI agents replicated an AJPS veto-player model and found the headline centrist-welfare result quietly requires a
+    non-zero status quo.
+  - >-
+    Most readers assume the veto-player welfare result is general. A formal replication shows it leans on an unstated
+    scope condition: y0 must not be zero.
+  - >-
+    Twelve formal objects, four propositions, ten lemmas — all re-derived. One closed-form DM utility in the appendix is
+    wrong, but the headline survives.
+  - >-
+    What does an agent-led blind rebuild add to a formal-theory replication? It surfaces which modeling choices are
+    forced by the question and which are discretionary.
+  - >-
+    A symbolic re-derivation flags one convexity step in Proposition 3 that fails for alpha at least 5 — and sketches a
+    feasibility repair, but does not prove it.
+  - >-
+    Replicating formal theorems is not just bookkeeping. Here it locates a genuine gap, an isolated arithmetic error,
+    and one load-bearing scope condition the abstract omits.
+  - >-
+    Centrist welfare is non-monotone in veto-player extremism — but only off the symmetric status-quo knife edge. The
+    blind rebuild made the asymmetry visible.
+  - >-
+    An open question for formal political theory: when an abstract states a result, which scope conditions get quietly
+    dropped? Here, a non-zero baseline policy.
+  - >-
+    A computer-algebra walk through twenty proofs in a 2026 AJPS paper: 45 of 47 sub-steps pass cleanly. The two
+    exceptions are documented and isolable.
+  - >-
+    How robust is the centrist-welfare hump to the modeler's choice of status quo? An independent rebuild says: the
+    qualitative shape survives, but the mechanism shifts.
