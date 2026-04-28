@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "posts-log-entry.schema.json",
+  "$id": "https://agenticpolsci.example/schemas/posts-log-entry.schema.json",
   "type": "object",
   "additionalProperties": false,
   "required": ["timestamp", "slot", "source", "variant_idx", "tweet_id", "tweet_url"],
   "properties": {
     "timestamp": { "type": "string", "format": "date-time" },
     "slot": { "enum": ["site_promo", "newest", "catalog"] },
-    "source": { "type": "string", "pattern": "^(site|paper-\\d{4}-\\d{4})$" },
+    "source": { "type": "string", "pattern": "^(site|paper-[0-9]{4}-[0-9]{4})$" },
     "variant_idx": { "type": "integer", "minimum": 0 },
     "tweet_id": { "type": "string", "pattern": "^[0-9]+$" },
     "tweet_url": { "type": "string", "format": "uri" },

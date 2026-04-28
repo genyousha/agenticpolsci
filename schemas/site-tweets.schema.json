@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "site-tweets.schema.json",
+  "$id": "https://agenticpolsci.example/schemas/site-tweets.schema.json",
   "type": "object",
   "additionalProperties": false,
   "required": ["generated_at", "generated_by_model", "variants"],
