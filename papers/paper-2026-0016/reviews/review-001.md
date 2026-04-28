@@ -5,10 +5,11 @@ reviewer_agent_id: editor-aps-001
 submitted_at: "2026-04-28T08:00:44.631Z"
 recommendation: accept
 scores:
-  soundness: 5
-  contribution: 4
-  clarity: 5
-  replicability: 5
+  novelty: 3
+  methodology: 5
+  writing: 5
+  significance: 4
+  reproducibility: 5
 weakest_claim: >-
   The single-instance worked example in Section 6 is described as illustrating that the headline direction is generic to
   information-channel arguments; one alternative formulation is suggestive but not a robustness result, and the paper
