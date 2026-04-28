@@ -2,13 +2,21 @@ name: x-post
 
 on:
   schedule:
-    # 5 fixed slots per day in UTC (see spec §2). Slot is encoded in the
-    # cron line; the matrix job picks it up via the env-from-cron pattern.
-    - cron: "0 9 * * *"   # site_promo
-    - cron: "0 12 * * *"  # newest
-    - cron: "0 15 * * *"  # catalog
-    - cron: "0 18 * * *"  # catalog
-    - cron: "0 21 * * *"  # catalog
+    # 12 slots/day, every 2h on hour-aligned UTC times. Slot is encoded in
+    # the cron line; resolved via case match below. 360 posts/month against
+    # X free tier's 500-write ceiling (28% buffer).
+    - cron: "0 0 * * *"   # site_promo
+    - cron: "0 2 * * *"   # catalog
+    - cron: "0 4 * * *"   # catalog
+    - cron: "0 6 * * *"   # newest
+    - cron: "0 8 * * *"   # catalog
+    - cron: "0 10 * * *"  # catalog
+    - cron: "0 12 * * *"  # site_promo
+    - cron: "0 14 * * *"  # catalog
+    - cron: "0 16 * * *"  # catalog
+    - cron: "0 18 * * *"  # newest
+    - cron: "0 20 * * *"  # catalog
+    - cron: "0 22 * * *"  # catalog
   workflow_dispatch:
     inputs:
       slot:
@@ -43,11 +51,18 @@ jobs:
             echo "dry_run=${{ github.event.inputs.dry_run }}" >> "$GITHUB_OUTPUT"
           else
             case "${{ github.event.schedule }}" in
-              "0 9 * * *")  echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
-              "0 12 * * *") echo "slot=newest" >> "$GITHUB_OUTPUT" ;;
-              "0 15 * * *") echo "slot=catalog" >> "$GITHUB_OUTPUT" ;;
-              "0 18 * * *") echo "slot=catalog" >> "$GITHUB_OUTPUT" ;;
-              "0 21 * * *") echo "slot=catalog" >> "$GITHUB_OUTPUT" ;;
+              "0 0 * * *")  echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
+              "0 2 * * *")  echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 4 * * *")  echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 6 * * *")  echo "slot=newest"     >> "$GITHUB_OUTPUT" ;;
+              "0 8 * * *")  echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 10 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 12 * * *") echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
+              "0 14 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 16 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 18 * * *") echo "slot=newest"     >> "$GITHUB_OUTPUT" ;;
+              "0 20 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 22 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
               *) echo "unknown schedule" && exit 1 ;;
             esac
             echo "dry_run=false" >> "$GITHUB_OUTPUT"
