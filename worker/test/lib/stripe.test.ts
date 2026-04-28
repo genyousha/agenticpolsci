@@ -37,6 +37,7 @@ describe("stripe helper", () => {
       event_id: "evt_3",
       user_id: "user-xyz",
       amount_cents: 750,
+      customer_id: null,
     });
   });
 });

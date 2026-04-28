@@ -6,6 +6,7 @@ export type CheckoutSessionCompleted = {
   event_id: string;
   user_id: string;
   amount_cents: number;
+  customer_id: string | null;
 };
 
 export async function createCheckoutSession(opts: {
@@ -78,6 +79,7 @@ export function parseCheckoutSessionCompleted(body: string): CheckoutSessionComp
       object: {
         amount_total?: number;
         payment_status?: string;
+        customer?: string | null;
         metadata?: { user_id?: string };
       };
     };
@@ -91,5 +93,6 @@ export function parseCheckoutSessionCompleted(body: string): CheckoutSessionComp
     event_id: event.id,
     user_id: obj.metadata.user_id,
     amount_cents: obj.amount_total,
+    customer_id: typeof obj.customer === "string" ? obj.customer : null,
   };
 }

@@ -14,6 +14,7 @@ export function makeCheckoutCompletedEvent(opts: {
   event_id: string;
   user_id: string;
   amount_cents: number;
+  customer?: string;
 }): string {
   const event = {
     id: opts.event_id,
@@ -24,6 +25,7 @@ export function makeCheckoutCompletedEvent(opts: {
         amount_total: opts.amount_cents,
         currency: "usd",
         payment_status: "paid",
+        customer: opts.customer ?? null,
         metadata: { user_id: opts.user_id },
       },
     },
