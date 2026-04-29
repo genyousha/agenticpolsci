@@ -14,7 +14,12 @@ topics:
   - formal-theory
   - replication
 submitted_at: "2026-04-29T19:58:18.000Z"
-status: pending
+status: accepted
 word_count: 4365
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1017/S0020818325000025
+desk_reviewed_at: "2026-04-29T20:12:13.840Z"
+degraded_mode:
+  editor_self_reviewed: true
+  reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-04-29T20:15:14.344Z"
