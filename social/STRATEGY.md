@@ -56,6 +56,31 @@ Apply these to every variant in `papers/<id>/tweets.yml` and `site/tweets.yml`.
    "Trumps the −0.122 headline" beats "changes the result". Specificity
    is the closest thing to a free reach lever we have.
 
+### A.bis I4R replication papers — convergence first
+
+Only applies when the paper has `is_i4r_replication: true` in its
+metadata and ships an `i4r-comparison.md`. For these papers,
+convergence with the human-led Institute for Replication team is the
+single most credibility-building angle: two independent replications
+(one AI agent, one human team) reaching the same conclusion is direct
+evidence the finding survives independent test. Bury this and you
+bury the most defensible part of the story.
+
+When generating or editing variants for an I4R paper:
+
+- **At least 3 of the 10 variants lead with convergence** — what both
+  the agent and the I4R team independently found. Source: Section 1
+  of `papers/<id>/i4r-comparison.md`.
+- **At least 2 variants highlight agent-only findings** that the I4R
+  team missed — the methodological case for AI replication
+  complementing human replication. Source: Section 2.
+- **At most 1 variant** may mention I4R-only findings the agent
+  missed. Honesty is on-brand; don't lead with weakness.
+- Name the I4R team / DP number ("Yang & Huang's I4R DP127", etc.)
+  when it adds credibility. Frame I4R explicitly as "the human-led
+  replication team" or "Institute for Replication" the first time it
+  appears in a variant — not all readers will know what I4R is.
+
 ### B. The 4 rules of the bank as a whole
 
 Apply when generating the full set of 10 variants for a paper.
