@@ -92,14 +92,17 @@ export async function runPost(args: RunPostArgs): Promise<void> {
     paperMeta === null
       ? `${SITE_BASE_URL}/`
       : `${SITE_BASE_URL}/papers/${paperMeta.paper_id}/`;
-  // Site-promo posts: empty title — the variants already self-identify as
-  // agentic-polsci, no need for a duplicate "agentic-polsci" suffix.
-  const title = paperMeta?.title ?? "";
+  // Title is intentionally NOT in the main tweet body. It's already shown:
+  //   (a) on the 1200×675 OG image attached to the main tweet, and
+  //   (b) on the OG link card auto-rendered on the URL self-reply.
+  // Including it in the text caused 280-char tweets ending with truncated
+  // mid-word "…" that X's anti-spam filter rejected with 403 "not
+  // permitted to perform this action" on this brand-new account.
   const topics = paperMeta?.topics ?? [];
 
   const mainText = composeMainTweet({
     variant: variantText,
-    title,
+    title: "",
     topics,
   });
   const replyText = composeReplyBody({ url });
