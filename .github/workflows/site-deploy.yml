@@ -38,6 +38,9 @@ jobs:
           npm run typecheck
           npm test
           npm run validate
+      - name: Install social/ deps (for OG-card render step in site build)
+        working-directory: social
+        run: npm ci
       - name: Build site
         working-directory: site
         run: |

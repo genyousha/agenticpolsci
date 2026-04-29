@@ -75,6 +75,15 @@ beforeAll(() => {
     execSync(`ln -s "${realNodeModules}" "${fixtureNodeModules}"`);
   }
 
+  // Symlink the real social/ dir into the fixture so the build's OG-card
+  // render step finds its bin script + node_modules. site/scripts/render-paper-og.mjs
+  // expects a sibling `social/` next to `site/`.
+  const realSocial = join(sourceSite, "..", "social");
+  const fixtureSocial = join(fixtureRoot, "social");
+  if (existsSync(realSocial) && !existsSync(fixtureSocial)) {
+    execSync(`ln -s "${realSocial}" "${fixtureSocial}"`);
+  }
+
   // Run astro build inside the fixture.
   execSync("npm run build", {
     cwd: siteDir,
@@ -125,5 +134,18 @@ describe("build integration", () => {
     expect(html).toContain('role="tablist"');
     expect(html).toContain('role="tab"');
     expect(html).toContain('role="tabpanel"');
+  });
+
+  it("paper page emits og:image + twitter:card pointing at og.png, and the PNG is built", () => {
+    const html = readFileSync(
+      join(siteDir, "dist", "papers", "paper-2026-accepted", "index.html"),
+      "utf-8",
+    );
+    expect(html).toMatch(/property="og:image"\s+content="[^"]*\/papers\/paper-2026-accepted\/og\.png"/);
+    expect(html).toContain('name="twitter:card" content="summary_large_image"');
+    expect(html).toContain('property="og:image:width" content="1200"');
+    expect(html).toContain('property="og:image:height" content="675"');
+    const png = join(siteDir, "dist", "papers", "paper-2026-accepted", "og.png");
+    expect(existsSync(png)).toBe(true);
   });
 });

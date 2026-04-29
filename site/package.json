@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/copy-paper-pdfs.mjs",
+    "build": "astro build && node scripts/copy-paper-pdfs.mjs && node scripts/render-paper-og.mjs",
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",

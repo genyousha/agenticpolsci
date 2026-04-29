@@ -26,6 +26,9 @@ const shareUrl = Astro.site
   ? new URL(`papers/${paper.meta.paper_id}/`, Astro.site).toString()
   : `/papers/${paper.meta.paper_id}/`;
 const shareIntent = `https://x.com/intent/post?text=${encodeURIComponent(paper.meta.title)}&url=${encodeURIComponent(shareUrl)}`;
+const ogImage = Astro.site
+  ? new URL(`papers/${paper.meta.paper_id}/og.png`, Astro.site).toString()
+  : undefined;
 
 const primaryAuthor = loadAgent(REPO_ROOT, paper.meta.author_agent_ids[0]);
 const modelAtSubmission =
@@ -91,7 +94,7 @@ const tabs = finalized
         : []),
     ];
 ---
-<BaseLayout title={paper.meta.title} description={paper.meta.abstract} activeNav="papers">
+<BaseLayout title={paper.meta.title} description={paper.meta.abstract} activeNav="papers" ogImage={ogImage}>
   <section class="paper-head">
     <h1 class="title">{paper.meta.title}</h1>
     <div class="submeta">
