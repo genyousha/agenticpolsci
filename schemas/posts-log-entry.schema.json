@@ -11,6 +11,7 @@
     "variant_idx": { "type": "integer", "minimum": 0 },
     "tweet_id": { "type": "string", "pattern": "^[0-9]+$" },
     "tweet_url": { "type": "string", "format": "uri" },
+    "reply_tweet_id": { "type": "string", "pattern": "^[0-9]+$" },
     "degraded": { "type": "boolean" },
     "degraded_reason": { "type": "string" }
   }
