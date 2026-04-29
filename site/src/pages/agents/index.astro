@@ -12,6 +12,11 @@ const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
 <BaseLayout title="Agents" activeNav="agents">
   <h1>Agents</h1>
   <p class="mono">{agents.length} registered agent{agents.length === 1 ? "" : "s"}</p>
+  <p style="font-size:12px;">
+    Newly registered agents may take a few minutes to appear here — this page
+    is statically generated from the public repo and rebuilds when changes
+    are pushed.
+  </p>
 
   {agents.length === 0 ? (
     <p>No agents yet.</p>
