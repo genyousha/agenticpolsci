@@ -1,0 +1,113 @@
+# X handles the operator considers high-value to engage with for
+# @genyousha_lab — political-science methodology, AI-and-society,
+# replication / meta-science, AI/agent infrastructure.
+#
+# These are baseline accounts the /find-follow-candidates skill treats
+# as "known-good." The skill uses them as seed nodes to discover
+# adjacent accounts in the same niches.
+#
+# Edit this file directly to add or remove anchors. Handle is the
+# canonical X handle (without the leading @). Some entries are
+# placeholders — the operator should verify the handle before relying
+# on it (the skill warns about unverified handles).
+
+anchors:
+  # --- Political-science methodology ---
+  - handle: StatModeling
+    name: Andrew Gelman
+    category: polisci-methodology
+    notes: Stats methodology, frequent on poli-sci replication threads
+    verified: true
+  - handle: JustinGrimmer
+    name: Justin Grimmer
+    category: polisci-methodology
+    notes: Text-as-data, polmeth, Stanford
+    verified: true
+  - handle: maqartan
+    name: Macartan Humphreys
+    category: polisci-methodology
+    notes: Causal inference, comparative politics, WZB
+    verified: true
+  - handle: DrewLinzer
+    name: Drew Linzer
+    category: polisci-methodology
+    notes: Election modeling, polmeth, Civiqs/Murmuration
+    verified: true
+  - handle: BrendanNyhan
+    name: Brendan Nyhan
+    category: polisci-methodology
+    notes: Misinformation, replication culture, Dartmouth
+    verified: true
+
+  # --- AI-and-society / AI ethics ---
+  - handle: random_walker
+    name: Arvind Narayanan
+    category: ai-and-society
+    notes: AI Snake Oil author, Princeton, replication-skeptical of AI claims
+    verified: true
+  - handle: sayashk
+    name: Sayash Kapoor
+    category: ai-and-society
+    notes: Co-author AI Snake Oil, Princeton
+    verified: true
+  - handle: emilymbender
+    name: Emily M. Bender
+    category: ai-and-society
+    notes: Stochastic parrots, computational linguistics, Washington
+    verified: true
+  - handle: mmitchell_ai
+    name: Margaret Mitchell
+    category: ai-and-society
+    notes: Hugging Face, formerly Google, AI ethics
+    verified: true
+
+  # --- AI / agent infrastructure ---
+  - handle: karpathy
+    name: Andrej Karpathy
+    category: ai-infra
+    notes: Tesla → OpenAI → Eureka Labs; agent + LLM tutorials
+    verified: true
+  - handle: simonw
+    name: Simon Willison
+    category: ai-infra
+    notes: LLM CLI maintainer, prolific blogger on agent tooling
+    verified: true
+  - handle: jeremyphoward
+    name: Jeremy Howard
+    category: ai-infra
+    notes: fast.ai, Answer.AI, agent-friendly Python ecosystem
+    verified: true
+
+  # --- Replication / meta-science ---
+  - handle: BrianNosek
+    name: Brian Nosek
+    category: meta-science
+    notes: Center for Open Science, reproducibility movement
+    verified: true
+  - handle: OSFramework
+    name: Center for Open Science
+    category: meta-science
+    notes: COS organizational account
+    verified: true
+  - handle: RetractionWatch
+    name: Retraction Watch
+    category: meta-science
+    notes: Tracks retractions across science
+    verified: true
+
+  # --- Comparable niche accounts (study how they grew) ---
+  - handle: jburnmurdoch
+    name: John Burn-Murdoch
+    category: data-journalism
+    notes: FT, applied data viz, large engaged following on quantitative posts
+    verified: true
+  - handle: paulnovosad
+    name: Paul Novosad
+    category: development-econ
+    notes: Dartmouth, applied economics, thread-driven explainer style
+    verified: true
+  - handle: PolMethSociety
+    name: Society for Political Methodology
+    category: polisci-organization
+    notes: Conference + org account; surface for list inclusion
+    verified: true
