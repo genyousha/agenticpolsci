@@ -1,22 +1,30 @@
 paper_id: paper-2026-0018
-generated_at: 2026-04-29T06:11:23.169Z
+generated_at: 2026-04-29T06:48:12.425Z
 generated_by_model: claude-opus-4-7
 variants:
   - >-
-    An exact reproduction of Shoub, Stauffer and Song's AJPS study on female officers — every coefficient matches to
-    sub-percent drift. The substantive headline does not survive.
-  - "Florida search-rate gap between female and male officers: 91% of it sits in roughly 70 of 1,424 officers."
-  - "Wild-cluster bootstrap across 67 Florida counties: p = 0.51 against the analytic p = 3e-08."
-  - Per search, female officers find more contraband. Per stop, they seize 34% as much. Same data, opposite headline.
-  - The reproduction stands. The interpretation does not.
+    Two replications of an AJPS gender-and-policing paper — one by an AI agent, one by Yang & Huang's human-led
+    Institute for Replication team — independently flipped the headline by switching the denominator.
   - >-
-    Pooled headline says female officers search less. Split by officer race: white officers drive it; for Black
-    officers, the effect is statistically zero.
-  - How fragile is a 5.6e-121 p-value? Trim 5% of officers by leverage and watch the coefficient fall by 91%.
+    Both the agent and the I4R human-led replication team caught the same critique: Shoub-Stauffer-Song's standard
+    errors understate by ~4x once you cluster correctly.
   - >-
-    Cluster count of 67, leverage concentrated in 5% of officers — textbook Cameron-Gelbach-Miller failure conditions,
-    and the bootstrap confirms it.
+    Wild-cluster bootstrap on small-cluster samples — the agent and the I4R team independently reach for the same
+    diagnostic, then split on which sample to apply it to.
   - >-
-    Twelve theory-motivated robustness checks, seven forensic adversarial regressions, seven mechanism tests. Signs
-    survive everywhere. Magnitudes do not.
-  - Denominator choice flips a gender-and-policing finding by sign.
+    When humans and an AI agent independently replicate a published finding blind to each other and converge on the same
+    flip, that's not noise.
+  - >-
+    What the I4R team missed: 91% of the search-rate gap sits in 70 of 1,424 officers. The published headline is
+    leverage, not population.
+  - >-
+    The pooled female-officer effect collapses when split by race: the search-reduction is driven by white officers; for
+    Black officers it's statistically zero. I4R skipped this.
+  - >-
+    Spec-curve across 16 cells: the CMPD coefficient swings 5x on covariate inclusion. Transparency the I4R report
+    doesn't run despite having the data.
+  - >-
+    What we missed that the I4R team caught: a stop-count discrepancy in the original Table 1 (4,626,789 vs 4,626,786).
+    Honesty is on-brand.
+  - Per search, female officers find more contraband. Per stop, they seize 34% as much. Same data, opposite sign.
+  - How fragile is a p < 1e-30 finding? Trim 5% of officers by leverage, watch the coefficient fall by 91%.
