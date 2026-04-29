@@ -2,21 +2,25 @@ name: x-post
 
 on:
   schedule:
-    # 12 slots/day, every 2h on hour-aligned UTC times. Slot is encoded in
-    # the cron line; resolved via case match below. 360 posts/month against
-    # X free tier's 500-write ceiling (28% buffer).
-    - cron: "0 0 * * *"   # site_promo
-    - cron: "0 2 * * *"   # catalog
-    - cron: "0 4 * * *"   # catalog
-    - cron: "0 6 * * *"   # newest
-    - cron: "0 8 * * *"   # catalog
-    - cron: "0 10 * * *"  # catalog
-    - cron: "0 12 * * *"  # site_promo
-    - cron: "0 14 * * *"  # catalog
-    - cron: "0 16 * * *"  # catalog
-    - cron: "0 18 * * *"  # newest
-    - cron: "0 20 * * *"  # catalog
-    - cron: "0 22 * * *"  # catalog
+    # 4 origin posts/day, Mon–Fri only. Times target the high-engagement
+    # academic-Twitter windows: 9am, 10am, 1pm, 5pm ET (EDT, UTC-4).
+    # In EST winter the slots shift one hour earlier in ET — acceptable.
+    # Weekends are deliberately skipped (research: Sat is the worst day,
+    # weekends underperform across the board for academic audiences).
+    #
+    # Volume math (post + self-reply for each origin slot):
+    #   4 origin × 5 days × ~4.3 weeks/month = ~86 origin posts/month
+    #   plus 86 self-reply posts/month = ~172 writes/month
+    #   vs free-tier 1500/month write cap (~11% utilization).
+    # Was: 12 origin/day every 2h = 360 origin/month + 360 self-replies =
+    # 720/month, plus the research finding that 12/day is over the
+    # saturation point for engagement on a niche account.
+    #
+    # Slot mapping (lines must match the case below):
+    - cron: "0 13 * * 1-5"  # 9am ET (EDT) — newest
+    - cron: "0 14 * * 1-5"  # 10am ET (EDT) — catalog
+    - cron: "0 17 * * 1-5"  # 1pm ET (EDT) — catalog
+    - cron: "0 21 * * 1-5"  # 5pm ET (EDT) — site_promo
   workflow_dispatch:
     inputs:
       slot:
@@ -51,18 +55,10 @@ jobs:
             echo "dry_run=${{ github.event.inputs.dry_run }}" >> "$GITHUB_OUTPUT"
           else
             case "${{ github.event.schedule }}" in
-              "0 0 * * *")  echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
-              "0 2 * * *")  echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 4 * * *")  echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 6 * * *")  echo "slot=newest"     >> "$GITHUB_OUTPUT" ;;
-              "0 8 * * *")  echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 10 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 12 * * *") echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
-              "0 14 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 16 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 18 * * *") echo "slot=newest"     >> "$GITHUB_OUTPUT" ;;
-              "0 20 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
-              "0 22 * * *") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 13 * * 1-5") echo "slot=newest"     >> "$GITHUB_OUTPUT" ;;
+              "0 14 * * 1-5") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 17 * * 1-5") echo "slot=catalog"    >> "$GITHUB_OUTPUT" ;;
+              "0 21 * * 1-5") echo "slot=site_promo" >> "$GITHUB_OUTPUT" ;;
               *) echo "unknown schedule" && exit 1 ;;
             esac
             echo "dry_run=false" >> "$GITHUB_OUTPUT"

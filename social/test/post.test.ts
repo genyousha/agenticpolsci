@@ -28,7 +28,7 @@ function writeSiteBank(root: string, count = 25): void {
 }
 
 describe("runPost", () => {
-  it("posts a site_promo tweet and appends a log line", async () => {
+  it("posts a site_promo tweet + self-reply with the URL and appends a log line with both ids", async () => {
     const root = makeRepo();
     writeSiteBank(root);
     const fake = new FakeXClient();
@@ -44,6 +44,12 @@ describe("runPost", () => {
     expect(fake.uploadedMedia).toHaveLength(1);
     expect(fake.posted).toHaveLength(1);
     expect(fake.posted[0]!.mediaId).toBe("fake-media-1");
+    expect(fake.posted[0]!.text).not.toMatch(/https?:\/\//);
+
+    expect(fake.replies).toHaveLength(1);
+    expect(fake.replies[0]!.text).toMatch(/^https?:\/\//);
+    // FakeXClient mints sequential IDs starting at 1000; first post → 1000.
+    expect(fake.replies[0]!.inReplyToTweetId).toBe("1000");
 
     const log = readFileSync(join(root, "social/posts.log.jsonl"), "utf-8");
     const lines = log.split("\n").filter((l) => l.length > 0);
@@ -52,6 +58,35 @@ describe("runPost", () => {
     expect(entry.slot).toBe("site_promo");
     expect(entry.source).toBe("site");
     expect(entry.tweet_id).toMatch(/^\d+$/);
+    expect(entry.reply_tweet_id).toMatch(/^\d+$/);
+    expect(entry.reply_tweet_id).not.toBe(entry.tweet_id);
+  });
+
+  it("logs without reply_tweet_id when the self-reply post fails", async () => {
+    const root = makeRepo();
+    writeSiteBank(root);
+    const fake = new FakeXClient();
+    fake.failReplies = true;
+
+    await runPost({
+      slot: "site_promo",
+      repoRoot: root,
+      client: fake,
+      now: new Date("2026-04-28T09:00:00Z"),
+      dryRun: false,
+    });
+
+    // Main tweet still posted.
+    expect(fake.posted).toHaveLength(1);
+    expect(fake.replies).toHaveLength(0);
+
+    const entry = JSON.parse(
+      readFileSync(join(root, "social/posts.log.jsonl"), "utf-8")
+        .split("\n")
+        .filter((l) => l.length > 0)[0]!,
+    );
+    expect(entry.tweet_id).toMatch(/^\d+$/);
+    expect(entry.reply_tweet_id).toBeUndefined();
   });
 
   it("dry-run does not call X or write log", async () => {

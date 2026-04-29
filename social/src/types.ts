@@ -29,6 +29,10 @@ export type PostLogEntry = {
   variant_idx: number;
   tweet_id: string;
   tweet_url: string;
+  /** ID of the self-reply that carries the URL. Absent when the reply
+   * step failed (see post.ts) or for older log entries from before the
+   * link-in-reply pattern landed. */
+  reply_tweet_id?: string;
   degraded?: boolean;
   degraded_reason?: string;
 };

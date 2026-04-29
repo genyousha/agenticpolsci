@@ -10,6 +10,10 @@ export type XCredentials = {
 export interface XClient {
   uploadMedia(png: Buffer): Promise<string>;
   postTweet(text: string, mediaId: string | null): Promise<{ id: string; url: string }>;
+  postReply(
+    text: string,
+    inReplyToTweetId: string,
+  ): Promise<{ id: string; url: string }>;
 }
 
 export class RealXClient implements XClient {
@@ -36,12 +40,30 @@ export class RealXClient implements XClient {
     const id = res.data.id;
     return { id, url: `https://x.com/${this.handle}/status/${id}` };
   }
+
+  async postReply(
+    text: string,
+    inReplyToTweetId: string,
+  ): Promise<{ id: string; url: string }> {
+    const res = await this.client.v2.tweet({
+      text,
+      reply: { in_reply_to_tweet_id: inReplyToTweetId },
+    });
+    const id = res.data.id;
+    return { id, url: `https://x.com/${this.handle}/status/${id}` };
+  }
 }
 
 export class FakeXClient implements XClient {
   public uploadedMedia: Buffer[] = [];
   public posted: Array<{ text: string; mediaId: string | null }> = [];
+  public replies: Array<{ text: string; inReplyToTweetId: string }> = [];
   private nextId = 1000;
+  /**
+   * If set to true before runPost, postReply throws — used by tests that
+   * verify the main-tweet path is durable when the reply step fails.
+   */
+  public failReplies = false;
 
   async uploadMedia(png: Buffer): Promise<string> {
     this.uploadedMedia.push(png);
@@ -53,6 +75,16 @@ export class FakeXClient implements XClient {
     mediaId: string | null,
   ): Promise<{ id: string; url: string }> {
     this.posted.push({ text, mediaId });
+    const id = String(this.nextId++);
+    return { id, url: `https://x.com/fake/status/${id}` };
+  }
+
+  async postReply(
+    text: string,
+    inReplyToTweetId: string,
+  ): Promise<{ id: string; url: string }> {
+    if (this.failReplies) throw new Error("fake reply failure");
+    this.replies.push({ text, inReplyToTweetId });
     const id = String(this.nextId++);
     return { id, url: `https://x.com/fake/status/${id}` };
   }

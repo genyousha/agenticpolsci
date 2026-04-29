@@ -35,9 +35,12 @@ Apply these to every variant in `papers/<id>/tweets.yml` and `site/tweets.yml`.
    A like is worth 0.5. A single substantive exchange is worth ~150 likes.
 4. **Never include the paper/site URL in the main tweet.** External
    links in the main tweet zero out median engagement on free-tier
-   accounts (Buffer n=18.8M, 2024–2025). Put the link in the FIRST
-   self-reply. The auto-poster currently puts the link inline — see
-   "Pipeline gaps" below.
+   accounts (Buffer n=18.8M, 2024–2025). The pipeline now enforces
+   this — `composeMainTweet` excludes URLs and `composeReplyBody`
+   posts the URL as a self-reply where the OG card auto-renders.
+   When you write a variant: it must read as a complete, compelling
+   thought without any link, because that's how readers see it in the
+   feed.
 5. **Vary opening structure across the bank.** Two variants opening with
    "AI agents just…" is a duplicate-content flag. The bank exists to
    avoid X's copypasta filter — every variant must open differently.
@@ -75,15 +78,11 @@ Apply when generating the full set of 10 variants for a paper.
 
 ### C. Posting cadence and timing
 
-The auto-poster currently fires 12 times/day every 2h. **Research strongly
-suggests this is over-saturation** for a niche academic account
-(Sprout/Hootsuite/Buffer all converge on 3–5/day; 34% of users unfollow
-brands that post too frequently). See "Pipeline gaps" — this is operator-
-configurable in `.github/workflows/x-post.yml`.
-
-**Time windows that matter (Buffer n=8.7M):** Tue 9am, Wed 9–10am ET (≈ 3pm
-CET, covers US + EU academic audience). Skip 6–11pm and weekends for
-primary promo. Saturday is the worst day.
+The auto-poster fires 4 origin posts/day Mon–Fri at 9am, 10am, 1pm,
+5pm ET (the high-engagement windows per Buffer n=8.7M: Tue 9am, Wed
+9–10am ET; Saturday is the worst day; weekends underperform overall).
+Each origin post is paired with a self-reply carrying the URL. The
+configuration lives in `.github/workflows/x-post.yml`.
 
 **First 30 minutes after posting** is when the heavy ranker decides
 whether to expand reach. If anyone (operator or scheduled session) can be
@@ -121,29 +120,32 @@ as `−148 like-equivalents` per occurrence.
 - Replies received but never engaged-by-author → forfeits the 75-weight
   signal. If we can't respond, don't ask questions.
 
-### F. Pipeline gaps — known, surfaced, not yet fixed
+### F. Pipeline gaps — known, surfaced
 
-These are deliberate trade-offs the operator hasn't acted on. Surfaced
-here so every tweet-writing context knows the ground truth:
+Resolved gaps are kept here for posterity (so future readers understand
+why the code looks the way it does); unresolved gaps are flagged so
+every tweet-writing context knows the ground truth.
 
-1. **Link is in the main tweet, not the first self-reply.**
-   `social/src/compose.ts` → `composeTweetBody` appends the URL inline.
-   Fix would require: post original (text + image), then post a self-
-   reply with the URL via the X API `in_reply_to_tweet_id` field. Until
-   that lands, expect free-tier link suppression on every post.
-2. **Cadence is 12/day vs research-recommended 4–5 origin/day.**
-   `.github/workflows/x-post.yml` cron set to every 2h. Reducing to 4
-   origin posts (Tue/Wed/Thu high-engagement window + 1 evening) plus 4
-   reply actions, 2 quote-posts, 2 thread continuations is the research-
-   informed shape — but reply/quote/thread infrastructure doesn't exist
-   yet. Operator awareness only.
+**RESOLVED:**
+
+1. ~~**Link in main tweet.**~~ **Fixed.** `social/src/compose.ts` now
+   exports `composeMainTweet` (no URL) and `composeReplyBody` (bare
+   URL). `social/src/post.ts` posts the main tweet then a self-reply
+   carrying the URL. The OG card is auto-rendered on the reply.
+2. ~~**12/day over-saturation.**~~ **Fixed.** `.github/workflows/x-post.yml`
+   cut to 4 origin posts/day Mon–Fri at 9am, 10am, 1pm, 5pm ET (UTC
+   13:00, 14:00, 17:00, 21:00). Total writes/month including self-reply:
+   ~172 vs free-tier 1500 cap (~11% utilization).
+
+**STILL OPEN:**
+
 3. **No threads — single tweets only.** Threads get ~3x engagement and
    are SEO-indexable. The auto-poster currently has no thread mode. The
    right shape: 1 thread per accepted paper (4–8 tweets), then 5–8
    single pull-quote variants over the following 2 weeks.
 4. **No reply-engagement loop.** When humans reply to @genyousha_lab,
    nothing currently responds. Forfeits the 75x reply-engaged-by-author
-   weight on every reply received.
+   weight on every reply received. Operator action.
 5. **Account is not Premium.** Premium accounts get ~10x reach (Buffer
    n=18.8M); the algorithm code shows ~4x in-network and ~2x out-of-
    network multipliers for verified-author tweets. Cost ceiling
@@ -153,9 +155,9 @@ here so every tweet-writing context knows the ground truth:
    document significant academic political-science migration to Bluesky.
    That audience is precisely our target. No infrastructure for this yet.
 
-When writing a variant, **assume the link suppression and cadence
-problems persist** — that's why the hook needs to be self-contained and
-worth reading even if no one ever clicks the link.
+When writing a variant, **the URL is no longer in your tweet body** —
+write the hook to be self-contained and compelling on its own; the link
+appears one tap below in the self-reply.
 
 ### G. Niche-targeting (operator-driven, not auto-poster)
 

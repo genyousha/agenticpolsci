@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { listAcceptedPapers, readTweetBank } from "./papers.js";
 import { readPostsLog, appendPostLogEntry } from "./log.js";
 import { selectForSlot } from "./select.js";
-import { composeTweetBody } from "./compose.js";
+import { composeMainTweet, composeReplyBody } from "./compose.js";
 import { renderPaperThumbnail, renderSiteThumbnail } from "./render-thumbnail.js";
 import {
   DOUBLE_FIRE_GUARD_SECONDS,
@@ -97,26 +97,45 @@ export async function runPost(args: RunPostArgs): Promise<void> {
   const title = paperMeta?.title ?? "";
   const topics = paperMeta?.topics ?? [];
 
-  const tweetText = composeTweetBody({
+  const mainText = composeMainTweet({
     variant: variantText,
     title,
     topics,
-    url,
   });
+  const replyText = composeReplyBody({ url });
 
   const png = paperMeta
     ? await renderPaperThumbnail(paperMeta)
     : await renderSiteThumbnail();
 
   if (args.dryRun) {
-    console.log(`[dry-run] tweet (${tweetText.length}/280): ${tweetText}`);
+    console.log(`[dry-run] main (${mainText.length}/280): ${mainText}`);
+    console.log(`[dry-run] reply (${replyText.length}/280): ${replyText}`);
     console.log(`[dry-run] thumbnail bytes: ${png.length}`);
     console.log(`[dry-run] selection: ${JSON.stringify(selection)}`);
     return;
   }
 
   const mediaId = await args.client.uploadMedia(png);
-  const tweet = await args.client.postTweet(tweetText, mediaId);
+  const tweet = await args.client.postTweet(mainText, mediaId);
+
+  // Self-reply with the URL. X auto-renders the OG card on the reply, so
+  // the link is one tap away with full preview. Per STRATEGY.md rule A-4,
+  // this is the link-in-self-reply pattern that recovers reach lost to
+  // the free-tier link penalty.
+  //
+  // Failure of the reply MUST NOT roll back the main tweet — the main is
+  // the irreversible side effect. We log a warning, write the log entry
+  // without reply_tweet_id, and let /restrategize-x flag the gap.
+  let replyTweetId: string | undefined;
+  try {
+    const reply = await args.client.postReply(replyText, tweet.id);
+    replyTweetId = reply.id;
+  } catch (e) {
+    console.error(
+      `[social/post] WARNING: main tweet ${tweet.id} posted but self-reply failed: ${(e as Error).message}`,
+    );
+  }
 
   const entry: PostLogEntry = {
     timestamp: args.now.toISOString(),
@@ -125,6 +144,7 @@ export async function runPost(args: RunPostArgs): Promise<void> {
     variant_idx: selection.variantIdx,
     tweet_id: tweet.id,
     tweet_url: tweet.url,
+    ...(replyTweetId ? { reply_tweet_id: replyTweetId } : {}),
     ...(selection.degraded ? { degraded: true } : {}),
     ...(selection.degraded_reason
       ? { degraded_reason: selection.degraded_reason }
@@ -133,6 +153,7 @@ export async function runPost(args: RunPostArgs): Promise<void> {
   appendPostLogEntry(args.repoRoot, entry);
 
   console.log(
-    `[social/post] posted ${entry.slot} (${entry.source} v${entry.variant_idx}) → ${entry.tweet_url}`,
+    `[social/post] posted ${entry.slot} (${entry.source} v${entry.variant_idx}) → ${entry.tweet_url}` +
+      (replyTweetId ? ` (+self-reply ${replyTweetId})` : " (self-reply FAILED)"),
   );
 }
