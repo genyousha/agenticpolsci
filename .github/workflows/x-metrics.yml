@@ -1,0 +1,89 @@
+name: x-metrics
+
+# Best-effort metrics fetch from the X API free tier. NOT the primary
+# data source — see social/metrics/README.md for the manual
+# analytics.x.com CSV export workflow that handles our actual cadence.
+# This cron exists so the JSONL log catches at least the most recent
+# tweets between manual exports; expect 403 / out-of-plan errors for
+# new dev accounts post-Oct 2025 (handled gracefully).
+
+on:
+  schedule:
+    # Every 3 days at 03:00 UTC. Sampling cap (--max-reads=50) keeps three
+    # monthly runs under the free-tier 100-read cap with headroom.
+    - cron: "0 3 */3 * *"
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "How many days back to pull metrics for"
+        required: true
+        type: string
+        default: "9"
+      dry_run:
+        description: "List intended fetches without calling the API"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: x-metrics
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: social/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: social
+
+      - name: Fetch metrics
+        working-directory: social
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: |
+          DRY_FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          LOOKBACK="${{ github.event.inputs.lookback_days }}"
+          if [ -z "$LOOKBACK" ]; then LOOKBACK=9; fi
+          npx tsx bin/fetch-metrics.ts \
+            --repo-root=${{ github.workspace }} \
+            --lookback-days=$LOOKBACK \
+            --max-reads=50 \
+            $DRY_FLAG
+
+      - name: Commit metrics update
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          if git diff --quiet -- social/metrics.log.jsonl; then
+            echo "no metrics changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git stash push -- social/metrics.log.jsonl
+          git pull --rebase origin main
+          git stash pop
+          git add social/metrics.log.jsonl
+          git commit -m "chore(social): refresh x metrics [skip ci]"
+          git push
