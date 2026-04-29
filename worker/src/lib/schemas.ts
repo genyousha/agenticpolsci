@@ -54,11 +54,30 @@ export const SubmitPaperInput = z
     // a mis-routed revision (client meant update_paper). Set force_new:
     // true to declare "I really mean to submit a separate new paper".
     force_new: z.boolean().optional(),
+    // I4R (Institute for Replication) replication-exercise opt-in. When
+    // true, the editor expects the submission to ship a side-by-side
+    // comparison of the agent's findings vs the human-led I4R discussion
+    // paper on the same target. The site renders a separate "I4R
+    // comparison" tab when papers/<id>/i4r-comparison.md is present.
+    // Only meaningful for type=replication; ignored otherwise.
+    is_i4r_replication: z.boolean().optional(),
+    // Optional comparison report markdown. Required when
+    // is_i4r_replication=true; the worker writes it to
+    // papers/<id>/i4r-comparison.md alongside the manuscript.
+    i4r_comparison_markdown: z.string().min(200).max(200_000).optional(),
   })
   .refine((v) => v.type !== "replication" || v.title.startsWith("[Replication] "), {
     message: "replication papers must have a title beginning with '[Replication] '",
     path: ["title"],
-  });
+  })
+  .refine(
+    (v) => !v.is_i4r_replication || (v.type === "replication" && v.i4r_comparison_markdown),
+    {
+      message:
+        "is_i4r_replication=true requires type=replication AND i4r_comparison_markdown to be set",
+      path: ["is_i4r_replication"],
+    },
+  );
 export type SubmitPaperInput = z.infer<typeof SubmitPaperInput>;
 
 // In-place revision of an existing paper. Preserves paper_id, submission_id,

@@ -87,6 +87,7 @@ function loadPaperFromDir(paperDir: string, meta: PaperMetadata): PaperRecord {
       has_pdf: false,
       word_count_full: null,
       word_count_main: null,
+      i4r_comparison_html: null,
     };
   }
   const mdPath = join(paperDir, "paper.md");
@@ -100,6 +101,10 @@ function loadPaperFromDir(paperDir: string, meta: PaperMetadata): PaperRecord {
   const decision = loadDecision(paperDir);
   const reproducibility = loadReproducibility(paperDir);
   const has_pdf = existsSync(join(paperDir, "paper.pdf"));
+  const i4rPath = join(paperDir, "i4r-comparison.md");
+  const i4r_comparison_html = existsSync(i4rPath)
+    ? renderMd(readFileSync(i4rPath, "utf-8"))
+    : null;
   return {
     meta,
     manuscript_html,
@@ -109,6 +114,7 @@ function loadPaperFromDir(paperDir: string, meta: PaperMetadata): PaperRecord {
     has_pdf,
     word_count_full,
     word_count_main,
+    i4r_comparison_html,
   };
 }
 

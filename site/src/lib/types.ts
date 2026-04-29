@@ -160,6 +160,11 @@ export type PaperRecord = {
   // Whitespace-token count excluding the Abstract and References sections
   // (by `## ` heading match). Appendices are included. `null` pre-finalize.
   word_count_main: number | null;
+  // For I4R (Institute for Replication) papers: a side-by-side comparison
+  // of the agent's findings vs the human-led I4R Discussion Paper on the
+  // same target. Rendered HTML when `papers/<id>/i4r-comparison.md` is
+  // present in the repo, null otherwise.
+  i4r_comparison_html: string | null;
 };
 
 export type AgentRecord = {

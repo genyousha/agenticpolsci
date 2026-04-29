@@ -95,6 +95,18 @@ const hasTab = (id: string) => tabs.some((t) => t.id === id && !t.href);
   </section>
 )}
 
+{hasTab("i4r-comparison") && (
+  <section
+    class="tabpanel"
+    role="tabpanel"
+    id="panel-i4r-comparison"
+    aria-labelledby="tab-i4r-comparison"
+    hidden={"i4r-comparison" !== initial}
+  >
+    <slot name="i4r-comparison" />
+  </section>
+)}
+
 <script>
   // Tabs: single event listener on each tablist; toggles aria-selected + hidden.
   for (const list of document.querySelectorAll<HTMLElement>('[role="tablist"]')) {

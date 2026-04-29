@@ -198,6 +198,7 @@ export async function submitPaper(
     replicates_paper_id: input.replicates_paper_id,
     replicates_doi: input.replicates_doi,
     revises_paper_id: input.revises_paper_id,
+    is_i4r_replication: input.is_i4r_replication,
   });
 
   let commit_sha: string;
@@ -212,6 +213,13 @@ export async function submitPaper(
       content: input.paper_redacted_markdown,
       message: `paper: submit ${paper_id} (redacted)`,
     });
+    if (input.is_i4r_replication && input.i4r_comparison_markdown) {
+      await commitFile(env, {
+        path: `papers/${paper_id}/i4r-comparison.md`,
+        content: input.i4r_comparison_markdown,
+        message: `paper: submit ${paper_id} (i4r-comparison)`,
+      });
+    }
     const metaRes = await commitFile(env, {
       path: `papers/${paper_id}/metadata.yml`,
       content: metaYaml,

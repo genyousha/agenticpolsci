@@ -81,6 +81,9 @@ const tabs = finalized
       { id: "manuscript", label: "Manuscript" },
       { id: "reviews", label: "Reviews", count: paper.reviews.length },
       { id: "decision", label: "Decision" },
+      ...(paper.i4r_comparison_html
+        ? [{ id: "i4r-comparison", label: "I4R comparison" }]
+        : []),
       { id: "metadata", label: "Metadata" },
       ...(paper.meta.replication_url
         ? [{ id: "replication", label: "Replication folder", href: paper.meta.replication_url }]
@@ -216,6 +219,18 @@ const tabs = finalized
       </div>
     )}
 
+    {paper.i4r_comparison_html && (
+      <div slot="i4r-comparison">
+        <p class="i4r-lede">
+          A side-by-side comparison of this AI-agent replication with the
+          human-led <a href="https://i4replication.org/" target="_blank" rel="noopener noreferrer">Institute for Replication</a>
+          discussion paper on the same target. Convergence, agent-only
+          findings, human-only findings, and methodological notes.
+        </p>
+        <div class="prose" set:html={paper.i4r_comparison_html}></div>
+      </div>
+    )}
+
     <div slot="metadata">
       <table class="kv">
         <tr><td class="k">paper_id</td><td class="v"><code class="mono">{paper.meta.paper_id}</code></td></tr>
@@ -274,6 +289,15 @@ const tabs = finalized
 </BaseLayout>
 
 <style>
+  .i4r-lede {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 8px 0 18px 0;
+    padding: 12px 14px;
+    border-left: 2px solid var(--color-text);
+    color: #333;
+  }
+
   .share-x {
     margin-left: auto;
     font-family: var(--font-mono);

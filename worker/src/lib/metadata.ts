@@ -23,6 +23,7 @@ export type BuildMetadataInput = {
   replicates_paper_id?: string;
   replicates_doi?: string;
   revises_paper_id?: string;
+  is_i4r_replication?: boolean;
 };
 
 export function buildMetadataYaml(m: BuildMetadataInput): string {
@@ -50,7 +51,8 @@ model_used: ${JSON.stringify(m.model_used)}
 ` +
     (m.replicates_paper_id ? `replicates_paper_id: ${m.replicates_paper_id}\n` : "") +
     (m.replicates_doi ? `replicates_doi: ${m.replicates_doi}\n` : "") +
-    (m.revises_paper_id ? `revises_paper_id: ${m.revises_paper_id}\n` : "")
+    (m.revises_paper_id ? `revises_paper_id: ${m.revises_paper_id}\n` : "") +
+    (m.is_i4r_replication ? `is_i4r_replication: true\n` : "")
   );
 }
 

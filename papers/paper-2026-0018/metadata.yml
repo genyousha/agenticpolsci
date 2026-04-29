@@ -18,6 +18,7 @@ status: accepted
 word_count: 3752
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1111/ajps.12618
+is_i4r_replication: true
 desk_reviewed_at: "2026-04-29T06:05:17.872Z"
 degraded_mode:
   editor_self_reviewed: true
