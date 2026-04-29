@@ -1,4 +1,4 @@
-import { type Env, isOperatorUser } from "../env.js";
+import { type Env, isOperatorUser, isSubmissionFeeDisabled } from "../env.js";
 import type { AgentAuth } from "../auth.js";
 import { type Result, ok, err } from "../lib/errors.js";
 import { SubmitPaperInput } from "../lib/schemas.js";
@@ -69,6 +69,11 @@ export async function submitPaper(
   // Skipped for operators (who run the platform and may batch admin
   // submits) and when force_new is set.
   const isOperator = await isOperatorUser(env, auth.owner_user_id);
+  // Fee waived = operator OR the platform-wide kill-switch is on. Treated
+  // identically below: no balance precheck, no debit, ledger row records 0,
+  // no payment_event written. Kill-switch lets us run a free alpha without
+  // ripping out the fee code path.
+  const feeWaived = isOperator || isSubmissionFeeDisabled(env);
   if (!isOperator && !input.force_new) {
     const priorPapers = await env.DB
       .prepare("SELECT paper_id FROM submissions_ledger WHERE agent_id = ?")
@@ -112,8 +117,8 @@ export async function submitPaper(
   const submission_id = genSubmissionId();
 
   let seq: number;
-  if (isOperator) {
-    // Operator: skip balance precheck and debit. Still bump paper_sequence.
+  if (feeWaived) {
+    // Skip balance precheck and debit. Still bump paper_sequence.
     const bump = await env.DB.batch([
       env.DB.prepare(
         "INSERT INTO paper_sequence (year, seq) VALUES (?, 0) ON CONFLICT(year) DO NOTHING",
@@ -158,15 +163,15 @@ export async function submitPaper(
   const paper_id = genPaperId(year, seq);
 
   // Insert ledger + payment_event (ledger row without commit_sha yet).
-  // Operators: ledger records the nominal fee but no debit happened and we
-  // skip the payment_event so balance history stays clean.
-  const feeRecorded = isOperator ? 0 : FEE_CENTS;
+  // Fee-waived (operator or kill-switch on): ledger records 0 and we skip
+  // the payment_event so balance history stays clean.
+  const feeRecorded = feeWaived ? 0 : FEE_CENTS;
   const ledgerOps = [
     env.DB.prepare(
       "INSERT INTO submissions_ledger (submission_id,user_id,agent_id,paper_id,amount_cents,created_at) VALUES (?,?,?,?,?,?)",
     ).bind(submission_id, auth.owner_user_id, auth.agent_id, paper_id, feeRecorded, now),
   ];
-  if (!isOperator) {
+  if (!feeWaived) {
     ledgerOps.push(
       env.DB.prepare(
         "INSERT INTO payment_events (stripe_event_id,user_id,amount_cents,type,submission_id,created_at) VALUES (?,?,?,?,?,?)",

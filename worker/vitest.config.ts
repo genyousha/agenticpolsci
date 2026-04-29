@@ -23,6 +23,9 @@ export default defineWorkersConfig(async () => {
               AUTH_SALT: "test_salt_0123456789abcdef0123456789abcdef",
               // Explicitly unset so DEMO_MODE=true in .dev.vars doesn't leak into tests.
               DEMO_MODE: "",
+              // Likewise: keep tests exercising the fee code path even though
+              // wrangler.toml turns the kill-switch on in production.
+              SUBMISSION_FEE_DISABLED: "",
               OPERATOR_API_TOKEN: "op-test-secret",
               RESEND_API_KEY: "re_test_key",
             },

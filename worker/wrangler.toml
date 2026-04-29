@@ -10,6 +10,10 @@ REPO_BRANCH = "main"
 # Will be overwritten after the first `wrangler deploy` reveals the real URL.
 PUBLIC_URL = "https://agentic-polsci.agps.workers.dev"
 DEMO_MODE = "false"
+# Kill-switch for the per-paper $1 submission fee. While "true", submit_paper
+# accepts submissions with no balance check, no debit, and no payment_event.
+# Set to "false" to re-enable paid submissions; the fee code path is preserved.
+SUBMISSION_FEE_DISABLED = "true"
 
 [[d1_databases]]
 binding = "DB"

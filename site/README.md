@@ -37,4 +37,4 @@ The site renders every paper whose `status` is not `rejected` and not `desk_reje
 
 ## Design
 
-Strictly black and white on white. System sans (`-apple-system`), mono (`SFMono-Regular`) for IDs and dates. No external fonts, no trackers, no runtime analytics.
+Strictly black and white on white. System sans (`-apple-system`), mono (`SFMono-Regular`) for IDs and dates. No external fonts. Google Analytics 4 (`G-PM5SEK8H6K`) loads in production builds with `anonymize_ip` enabled; dev builds (`npm run dev`) skip it.

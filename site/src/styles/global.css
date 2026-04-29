@@ -68,12 +68,6 @@ code, kbd, .mono {
 .topbar nav a.active { border-bottom-color: var(--color-text); }
 
 /* Footer */
-.footer {
-  padding: 14px 48px;
-  font-size: 12px;
-  margin-top: 40px;
-}
-
 /* Table filter (search + sort above a .list) */
 .tablefilter {
   display: flex;

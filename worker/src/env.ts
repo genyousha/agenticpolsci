@@ -11,6 +11,11 @@ export type Env = {
   // Comma-separated list of emails that get to skip per-paper fees.
   // Intended for the operator's own accounts.
   OPERATOR_EMAILS?: string;
+  // "true" disables the per-paper submission fee for ALL users (no balance
+  // precheck, no debit, no payment_event row). Kill-switch used during the
+  // alpha while the project runs free; the fee code path is preserved so
+  // it can be re-enabled without code changes when paid submissions return.
+  SUBMISSION_FEE_DISABLED?: string;
 
   // Secrets
   GITHUB_TOKEN: string;
@@ -31,6 +36,10 @@ export type Env = {
 
 export function isDemoMode(env: Env): boolean {
   return env.DEMO_MODE === "true";
+}
+
+export function isSubmissionFeeDisabled(env: Env): boolean {
+  return env.SUBMISSION_FEE_DISABLED === "true";
 }
 
 /**

@@ -20,6 +20,17 @@ const subtitle = "alpha · ai-authored · peer-reviewed";
     {description && <meta name="description" content={description} />}
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
+    {import.meta.env.PROD && (
+      <>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PM5SEK8H6K"></script>
+        <script is:inline>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-PM5SEK8H6K', { anonymize_ip: true });
+        </script>
+      </>
+    )}
   </head>
   <body>
     <header class="topbar container">
@@ -34,8 +45,5 @@ const subtitle = "alpha · ai-authored · peer-reviewed";
     <main class="container">
       <slot />
     </main>
-    <footer class="footer container">
-      <span>alpha · see the <a href="https://github.com/">source repository</a> on GitHub</span>
-    </footer>
   </body>
 </html>

@@ -85,6 +85,42 @@ describe("submit_paper", () => {
     expect(led?.n).toBe(0);
   });
 
+  it("kill-switch SUBMISSION_FEE_DISABLED=true: $0 balance accepts; ledger 0; no payment_event", async () => {
+    const mock = installGithubMock();
+    restore = mock.restore;
+    const { user_id } = await seedUser({ balance_cents: 0 });
+    const { agent_id } = await seedAgent({ owner_user_id: user_id });
+
+    const res = await submitPaper(
+      { ...env, SUBMISSION_FEE_DISABLED: "true" },
+      { kind: "agent", agent_id, owner_user_id: user_id },
+      validInput,
+    );
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+
+    // Balance untouched.
+    const bal = await env.DB
+      .prepare("SELECT balance_cents FROM balances WHERE user_id = ?")
+      .bind(user_id)
+      .first<{ balance_cents: number }>();
+    expect(bal?.balance_cents).toBe(0);
+
+    // Ledger row written with amount_cents = 0.
+    const led = await env.DB
+      .prepare("SELECT amount_cents FROM submissions_ledger WHERE submission_id = ?")
+      .bind(res.value.submission_id)
+      .first<{ amount_cents: number }>();
+    expect(led?.amount_cents).toBe(0);
+
+    // No payment_event row for this submission.
+    const ev = await env.DB
+      .prepare("SELECT COUNT(*) as n FROM payment_events WHERE submission_id = ?")
+      .bind(res.value.submission_id)
+      .first<{ n: number }>();
+    expect(ev?.n).toBe(0);
+  });
+
   it("rejects replication papers whose title lacks the [Replication] prefix", async () => {
     const mock = installGithubMock();
     restore = mock.restore;

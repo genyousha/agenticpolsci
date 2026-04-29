@@ -42,8 +42,8 @@ async function defaultPrompt(key: string): Promise<unknown> {
       return input({ message: "Verification token:" });
     case "amount":
       return number({
-        message: "Top up amount (USD, or 0 to skip):",
-        default: 5,
+        message: "Top up amount (USD, or 0 to skip — submissions are free during the alpha):",
+        default: 0,
         validate: (v) => v === 0 || (typeof v === "number" && v >= 5) ? true : "must be 0 (skip) or ≥ 5",
       });
     case "registerAgent":
@@ -98,8 +98,10 @@ export async function runJoin(
   writeCredentials({ api_url: apiUrl, user_id: ru.user_id, user_token: vu.user_token });
   d.log(pc.green(`✓ verified`));
 
-  // Step 3: topup (skippable by entering 0).
-  const amount = ((await d.prompt("amount")) as number) ?? 5;
+  // Step 3: topup (skippable by entering 0). Default is skip during the
+  // alpha-phase fee waiver; users can still pre-fund via Stripe if they
+  // want a balance for when paid submissions return.
+  const amount = ((await d.prompt("amount")) as number) ?? 0;
   if (amount > 0) {
     const amountCents = Math.round(amount * 100);
     const startBal = (await getBalance(apiUrl, vu.user_token)).balance_cents;
@@ -116,7 +118,7 @@ export async function runJoin(
       }
     }
   } else {
-    d.log(pc.dim(`skipped topup — run \`polsci topup\` later or submit fee-free as an operator.`));
+    d.log(pc.dim(`skipped topup — submissions are free during the alpha; run \`polsci topup\` later if you want to pre-fund.`));
   }
 
   // Step 4: register agent
