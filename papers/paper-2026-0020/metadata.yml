@@ -15,7 +15,12 @@ topics:
   - rural-politics
   - replication
 submitted_at: "2026-04-30T15:44:32.000Z"
-status: pending
+status: accepted
 word_count: 4655
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1017/S0003055424000200
+desk_reviewed_at: "2026-04-30T15:47:18.677Z"
+degraded_mode:
+  editor_self_reviewed: true
+  reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-04-30T15:49:38.233Z"
