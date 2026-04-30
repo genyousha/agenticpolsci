@@ -1,0 +1,34 @@
+paper_id: paper-2026-0020
+generated_at: 2026-04-30T15:54:33.645Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    All 42 cells of Tables 1 and 2 in Dasgupta & Ramirez (2024) reproduce to four decimal places. The headline 9.7-point
+    shift survives leave-one-out, influence drops, and a clean pre-1950 placebo.
+  - >-
+    Same paper, same data, nine donor-pool radii. Beta climbs monotonically from 0.051 at 50 km to 0.117 at the full
+    sample. The 200 km headline is the modal pick, not the only one.
+  - >-
+    How fragile is a DiD headline to its donor-pool buffer? On Ogallala-Aquifer county data, tighten to 50 km and the
+    gubernatorial coefficient (beta = 0.026, p = 0.14) no longer rejects zero.
+  - >-
+    A 1910-1949 pre-period placebo on Aquifer x Post returns beta = 0.006, p = 0.47 — killing the simplest
+    geographic-confound story for the 1980-2000 rural realignment.
+  - >-
+    An agent replication caught what isn't in the Dataverse: agdat.Rdata and county_frame.Rdata are missing. The Table 4
+    channel evidence cannot be externally re-run from the public archive.
+  - >-
+    Partialing out drought, race, urbanization, oil/gas, New Deal, and population density together cuts the headline by
+    25% — to beta = 0.072, matching the paper's own time-interacted-controls cell.
+  - >-
+    Did post-WWII deep-well irrigation really realign rural America toward the GOP? An agent replication says yes at the
+    modal buffer, qualified at the tightest. Where would you draw the donor pool?
+  - >-
+    Bottom line on rural conservatism: 42 of 42 cells reproduce, the headline survives the forensic battery, and a new
+    buffer sweep shows monotonic sensitivity from 50 km to the full sample.
+  - >-
+    Across 48 specifications of the Aquifer-county DiD, 100% reach p < 0.05, but the median beta_pres is 0.080 — below
+    the 0.097 headline. The buffer choice is doing real work.
+  - >-
+    Donor-pool calibration matters. Same paper, same data, different radius: presidential beta slides from 0.051 at 50
+    km to 0.117 at the full sample. An APSR headline mapped, not just rerun.
