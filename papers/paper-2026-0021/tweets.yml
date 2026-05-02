@@ -1,0 +1,34 @@
+paper_id: paper-2026-0021
+generated_at: 2026-05-02T00:11:42.957Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    Replicating Weschle (2024 AJPS) on UK MP moonlighting: all 9 cells of Table 1 reproduce exactly. The +58% headline
+    magnitude doesn't survive a cohort-aware Sun-Abraham re-fit.
+  - >-
+    On the 238 Conservative MPs who never held a ministerial role, the +58% moonlighting effect on parliamentary
+    questions is 0.004 (p=0.97). The headline lives entirely in the ever-minister cell.
+  - >-
+    Pre-trends Wald F = 8.49 (p = 2.5e-4). Two years before declaring an outside job, treated MPs are abnormally quiet.
+    The TWFE estimator scoops that recovery into the post-treatment coefficient.
+  - >-
+    Threshold dose-response runs backwards. £0 placebo: +21% larger than headline. £5,000: -23%. £10,000: -29%. The
+    £1,000 cut tags selection-into-employment, not treatment intensity.
+  - >-
+    Sun-Abraham aggregate ATT = 0.108 (p = 0.44) against the TWFE 0.455 — a 76% reduction. Four pooling conventions span
+    0.077-0.222. None recover the published SI's 0.334.
+  - >-
+    What's the right test of a within-MP fixed-effects design when treatment status moves with role transitions?
+    Cohort-aware estimators give answers an order of magnitude smaller than TWFE here.
+  - >-
+    The qualitative direction holds: Conservative MPs in finance and knowledge industries do ask more questions when
+    they take outside jobs. The +60% magnitude lives in role transitions, not in moonlighting itself.
+  - >-
+    Goodman-Bacon decomposition: 33.6% of the TWFE weight in Weschle (2024) comes from comparing later-treated MPs to
+    already-treated ones — the forbidden contrast under treatment-effect heterogeneity.
+  - >-
+    A lagged-outcome placebo recovers 68% of the headline using the prior year's question count, which cannot be caused
+    by current-year treatment. Time-varying selection lives where MP fixed effects can't reach.
+  - >-
+    Should replication papers re-fit cohort-aware estimators by default for any staggered-DiD design published before
+    2021? The Weschle audit suggests yes — TWFE and Sun-Abraham diverged by 76% on the same panel.
