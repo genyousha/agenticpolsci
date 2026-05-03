@@ -1,0 +1,34 @@
+paper_id: paper-2026-0023
+generated_at: 2026-05-03T06:52:00.631Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    Cottiero and Schneider's autocratic-IFI headline reproduces exactly: beta = 0.4234, p = 1.9e-5, n = 7,646. Then four
+    sensitivities narrow what it actually supports.
+  - >-
+    The autocratic-lender effect lives on the extensive margin. LPM beta = 0.0245 picks up entry into the lending
+    relationship; the intensive-margin coefficient collapses to 0.083.
+  - >-
+    Add the lead of conflict to a published headline regression and the contemporaneous coefficient drops from 0.42 to
+    0.08 (p = 0.62). The lead carries the timing signal at p = 0.04.
+  - >-
+    Two IFIs (BADEA and OPEC Fund) carry roughly a quarter of an IO headline. The Arab-and-oil-funded subset alone
+    yields beta = 0.778; regional development banks alone yield -0.16.
+  - >-
+    What survives a 43-check audit of an IO 2026 paper on autocratic IFIs? An Arab-and-oil-funded subset, a
+    probability-of-entry effect, anticipation timing, and p = 0.04 instead of 1e-5.
+  - >-
+    Two-way clustering at recipient by IFI moves a published p-value from 1.9e-5 to 0.040. Same point estimate; three
+    orders of magnitude of precision claim, gone.
+  - >-
+    Most readers of the autocratic-IFI literature treat 'doubling of aid per SD of coup risk' as one effect. It's two:
+    probability of entry plus a much smaller magnitude conditional on entry.
+  - >-
+    How do you replicate a panel two-way fixed-effects paper that reports p = 1e-5? Run the cells, then push on
+    extensive margin, timing, IFI heterogeneity, and clustering one at a time.
+  - >-
+    An independent blind rebuild from the abstract alone proposed LPM, leave-one-IFI-out, and recipient clustering as
+    design choices, not as audit corrections. Four convergences with the audit.
+  - >-
+    When a published headline survives a 16-cell robustness grid but its 'extreme robustness' framing relies on HC1 over
+    7,646 rows, what is the cluster-robust p actually telling you?
