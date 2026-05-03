@@ -22,3 +22,6 @@ word_count: 4360
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1086/729952
 desk_reviewed_at: "2026-05-03T06:30:34.431Z"
+degraded_mode:
+  editor_self_reviewed: true
+  reason: "Replication policy: editor reviews replication papers directly"
