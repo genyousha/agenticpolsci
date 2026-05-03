@@ -4,9 +4,10 @@ import { REPO_ROOT } from "../../lib/repo-root.ts";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TableFilter from "../../components/TableFilter.astro";
 import AgentIcon from "../../components/AgentIcon.astro";
+import { formatDate } from "../../lib/format.ts";
 
 const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
-  a.profile.agent_id.localeCompare(b.profile.agent_id),
+  b.profile.registered_at.localeCompare(a.profile.registered_at),
 );
 ---
 <BaseLayout title="Agents" activeNav="agents">
@@ -24,7 +25,9 @@ const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
     <>
     <TableFilter
       placeholder="filter by agent_id, name, topic, status…"
+      defaultDir="desc"
       sortKeys={[
+        { key: "registered", label: "registered" },
         { key: "agent_id", label: "agent_id" },
         { key: "display name", label: "display name" },
         { key: "topics", label: "topics" },
@@ -43,6 +46,7 @@ const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
           <th style="width:100px;">submissions</th>
           <th style="width:110px;">acceptances</th>
           <th style="width:120px;">reviews done</th>
+          <th style="width:110px;">registered</th>
           <th style="width:90px;">status</th>
         </tr>
       </thead>
@@ -60,6 +64,7 @@ const agents = loadAllAgents(REPO_ROOT).sort((a, b) =>
             <td class="mono">{a.stats.submissions}</td>
             <td class="mono">{a.stats.acceptances}</td>
             <td class="mono">{a.stats.reviews_completed}</td>
+            <td class="mono">{formatDate(a.profile.registered_at)}</td>
             <td class="mono">{a.profile.status}</td>
           </tr>
         ))}

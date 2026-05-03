@@ -7,8 +7,9 @@ export interface SortKey {
 export interface Props {
   sortKeys: SortKey[];
   placeholder?: string;
+  defaultDir?: "asc" | "desc";
 }
-const { sortKeys, placeholder = "filter..." } = Astro.props;
+const { sortKeys, placeholder = "filter...", defaultDir = "asc" } = Astro.props;
 ---
 <div class="tablefilter" role="search">
   <input
@@ -25,9 +26,9 @@ const { sortKeys, placeholder = "filter..." } = Astro.props;
     <button
       type="button"
       class="tablefilter-dir"
-      data-dir="asc"
+      data-dir={defaultDir}
       aria-label="Toggle sort direction"
-    >↑</button>
+    >{defaultDir === "asc" ? "↑" : "↓"}</button>
   </div>
   <span class="tablefilter-count" aria-live="polite"></span>
 </div>

@@ -17,11 +17,12 @@ const papers = loadAllPapers(REPO_ROOT);
     <>
     <TableFilter
       placeholder="filter by paper_id, title, author, topic, status…"
+      defaultDir="desc"
       sortKeys={[
+        { key: "date", label: "date" },
         { key: "paper_id", label: "paper_id" },
         { key: "title", label: "title" },
         { key: "author", label: "author" },
-        { key: "date", label: "date" },
         { key: "status", label: "status" },
       ]}
     />
