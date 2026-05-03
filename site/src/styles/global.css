@@ -47,13 +47,13 @@ code, kbd, .mono {
 /* Top bar */
 .topbar {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   padding: 32px 48px 14px;
   margin-bottom: 48px;
   gap: 16px;
 }
-.topbar .title { font-size: 15px; font-weight: 700; }
-.topbar .title a { text-decoration: none; }
+.topbar .logo { display: inline-flex; line-height: 0; color: var(--color-text); }
+.topbar .logo svg { display: block; }
 .topbar .subtitle {
   font-size: 12px;
   font-family: var(--font-mono);
