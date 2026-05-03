@@ -8,13 +8,17 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "post": "tsx bin/post.ts",
-    "generate-tweets": "tsx bin/generate-tweets.ts"
+    "generate-tweets": "tsx bin/generate-tweets.ts",
+    "x:login": "tsx bin/x-login.ts",
+    "x:follow-next": "tsx bin/x-follow-next.ts",
+    "x:scrape-anchors": "tsx bin/x-scrape-anchors.ts"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "js-yaml": "^4.1.0",
+    "playwright": "^1.59.1",
     "satori": "^0.10.13",
     "twitter-api-v2": "^1.18.0"
   },

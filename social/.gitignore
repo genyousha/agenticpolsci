@@ -1,0 +1,17 @@
+# Persisted X (Twitter) login session — cookies, never commit.
+.x-state.json
+.x-state.json.bak
+
+# Playwright artifacts during scraping/debugging
+.playwright/
+playwright-report/
+test-results/
+
+# Generated reply queue (volatile; regenerated each scrape)
+reply-queue.md
+
+# Anchor post snapshot (raw scrape output, intermediate)
+anchor-posts.json
+
+# Follow-action log (per-operator, contains real follow timestamps)
+follows.log.jsonl

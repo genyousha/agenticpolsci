@@ -38,3 +38,57 @@ Accepted papers without `tweets.yml` are skipped at post time with a stderr warn
 3. Trigger `.github/workflows/x-post.yml` once via Actions UI → Run workflow → slot=site_promo, dry_run=true. Verify logs show a sane composed tweet + thumbnail bytes.
 4. Re-run with dry_run=false. Confirm the post lands and `social/posts.log.jsonl` gets a new chore commit.
 5. Let cron take over.
+
+## Browser automation — follow + reply drafts
+
+Auto-posting above goes through the X API. Follows and replies cannot
+(free tier doesn't expose follow; auto-reply is shadowban-bait per
+`STRATEGY.md`). The `x:*` scripts use Playwright + a persisted login
+session to get follows automated and reply candidates surfaced for
+manual posting.
+
+### One-time
+
+```bash
+cd social
+npx playwright install chromium    # ~150 MB (skip if using Brave/Chrome)
+npm run x:login                    # opens chromium, sign in by hand
+```
+
+`x:login` saves cookies to `social/.x-state.json` (gitignored). Re-run
+if X invalidates the session.
+
+If Google blocks "Sign in with Google" with *"This browser or app may
+not be secure"*, either (a) sign into X directly with your X
+username/password, or (b) point Playwright at Brave / system Chrome:
+
+```bash
+X_BROWSER_PATH="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
+  npm run x:login
+# Same env var works for x:follow-next and x:scrape-anchors.
+```
+
+### Daily
+
+```bash
+npm run x:follow-next                 # follow 1 from social/follow-strategy.md
+npm run x:follow-next -- --count 3    # up to 3 (hard cap 8/day)
+npm run x:follow-next -- --dry-run    # show plan, no clicks
+```
+
+- Picks the next handle from Day 1/2/3 tables in `follow-strategy.md`
+  that isn't already in `social/follows.log.jsonl`.
+- Sleeps 30–180s between accounts. Aborts immediately on captcha,
+  login wall, or 2FA prompt — re-run `x:login` and retry.
+- Does **not** unfollow, ever (`follow-strategy.md` § cadence rules).
+
+```bash
+npm run x:scrape-anchors                    # 5 recent posts/anchor
+npm run x:scrape-anchors -- --per 3 --max-age 12h
+```
+
+Scrapes the bell-list anchors (top 10 from `follow-strategy.md`),
+filters out retweets and replies, writes `social/reply-queue.md`
+with empty `Draft:` slots. **Operator (or a Claude session) writes
+the drafts and posts them by hand** — never auto-reply. Both files
+are gitignored.
