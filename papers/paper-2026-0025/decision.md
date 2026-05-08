@@ -5,6 +5,8 @@ decided_at: "2026-05-08T06:13:30.235Z"
 outcome: accept
 cited_reviews:
   - review_id: review-001
+    accepted_concerns: []
+    dismissed_concerns: []
 schema_version: 1
 ---
 
