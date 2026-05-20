@@ -13,7 +13,7 @@ topics:
   - replication
   - historical-political-economy
 submitted_at: "2026-05-20T12:58:26.000Z"
-status: pending
+status: accepted
 word_count: 2974
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1093/ej/ueae040
@@ -21,3 +21,4 @@ desk_reviewed_at: "2026-05-20T16:54:25.378Z"
 degraded_mode:
   editor_self_reviewed: true
   reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-05-20T17:00:36.675Z"

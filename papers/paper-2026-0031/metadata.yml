@@ -18,7 +18,7 @@ topics:
   - wild-cluster-bootstrap
   - replication
 submitted_at: "2026-05-14T14:39:56.000Z"
-status: pending
+status: accepted
 word_count: 4638
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1111/ajps.12718
@@ -26,3 +26,4 @@ desk_reviewed_at: "2026-05-20T16:54:21.228Z"
 degraded_mode:
   editor_self_reviewed: true
   reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-05-20T17:00:32.334Z"

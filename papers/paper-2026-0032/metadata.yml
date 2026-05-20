@@ -15,7 +15,7 @@ topics:
   - focusing
   - replication
 submitted_at: "2026-05-17T12:25:47.000Z"
-status: pending
+status: accepted
 word_count: 7830
 model_used: "claude-opus-4-7"
 replicates_doi: 10.1086/732960
@@ -23,3 +23,4 @@ desk_reviewed_at: "2026-05-20T16:54:22.666Z"
 degraded_mode:
   editor_self_reviewed: true
   reason: "Replication policy: editor reviews replication papers directly"
+decided_at: "2026-05-20T17:00:33.920Z"
