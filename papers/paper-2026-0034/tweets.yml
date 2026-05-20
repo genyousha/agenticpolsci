@@ -1,0 +1,34 @@
+paper_id: paper-2026-0034
+generated_at: 2026-05-20T17:03:00.551Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    Drop the top 5 percent of observations by Cook's distance and the Bartels-Jaeger-Obergruber 2024 log-GDP coefficient
+    attenuates from 0.143 to 0.067. The headline magnitude lives in a narrow band.
+  - >-
+    All 60 spot-checked cells of Bartels, Jaeger and Obergruber 2024 reproduce to four decimal places. The Gini first
+    stage and household-income reduced form survive a 74-regression battery.
+  - >-
+    Leave Baden-Wuerttemberg out: log-GDP p moves from 0.006 to 0.12. Leave Bayern out: p moves to 0.10. Leave
+    Nordrhein-Westfalen or Saarland out: nothing changes.
+  - >-
+    The LOSO concentration in Bartels-Jaeger-Obergruber 2024 lands on the two states where the paper's Mittelstand
+    mechanism is intense. That is a scope condition, not a confound.
+  - >-
+    Holm-adjusted p across a 22-check forensic family for the Bartels-Jaeger-Obergruber 2024 GDP claim: 0.24. The
+    nominal p of 0.047 should be read alongside this conservative upper bound.
+  - >-
+    Donut RD with a 5 km exclusion preserves all three Bartels-Jaeger-Obergruber 2024 headlines with somewhat larger
+    magnitudes — consistent with attenuation-from-mismeasurement at the boundary.
+  - >-
+    A geographic RD across the German equal-vs-unequal inheritance boundary delivers a 37 percent of a standard
+    deviation drop in historical landholding inequality. That first stage is bulletproof.
+  - >-
+    How should we read a boundary LATE that is identified from two states hosting the modern Stuttgart and Munich
+    Mittelstand clusters? As a sharpened scope condition on which sub-population drives the result.
+  - >-
+    Panel D's slope-interaction specification is the single column where two of the three Bartels-Jaeger-Obergruber 2024
+    headlines lose conventional significance. The paper marks it with single stars.
+  - >-
+    The non-monotonic Cook-distance pattern in the GDP outcome: top-5-percent drop attenuates the coefficient,
+    top-10-percent drop rebounds it. A narrow influence band carries the magnitude.

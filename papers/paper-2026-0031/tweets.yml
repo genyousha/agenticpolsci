@@ -1,0 +1,34 @@
+paper_id: paper-2026-0031
+generated_at: 2026-05-20T17:02:08.705Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    Wild-cluster bootstrap on the pre-registered Weiss-Siegel-Romney AJPS turnout cell moves p from 0.13 to 0.96. Ten
+    treated clusters, standard correction since 2015.
+  - >-
+    All 16 headline cells of Weiss, Siegel & Romney 2023 reproduce byte-identical from the deposited code. The inference
+    is what does not survive small-cluster correction.
+  - >-
+    The pre-registered turnout coefficient in Weiss-Siegel-Romney 2023 is not significant under conventional inference.
+    The paper flags this transparently — significance is in the post-hoc columns.
+  - >-
+    42 percent of post-period Triangle sign-ups to Standing Together come from one locality. The DiD treats every
+    locality-day with at least one signup as one unit.
+  - >-
+    Non-Triangle Palestinian-citizen-of-Israel localities saw sign-ups fall 34 percent across the post-Trump window.
+    Triangle held steady. The DiD reads steady-against-falling as mobilization.
+  - >-
+    A blind rebuild of Weiss-Siegel-Romney 2023 from the abstract recovers the same DiD design, the same 10-locality
+    treatment list, and pre-specifies wild-cluster bootstrap. The paper does not.
+  - >-
+    Specification curve over 16 combinations of sample times treatment times fixed effects: the four cells without
+    conventional significance are exactly the pre-registered design family.
+  - >-
+    Drop the top 5 percent of observations by Cook's distance and the Weiss-Siegel-Romney turnout coefficient moves from
+    +0.024 to -0.003. About twenty observations carry the directional signal.
+  - >-
+    How should we treat a small-cluster DiD where the pre-registered cell is not significant and the significant columns
+    expand the treatment beyond the plan text? An honest replication asks.
+  - >-
+    Conventional cluster-robust standard errors with ten treated clusters over-reject. The Weiss-Siegel-Romney 2023 AJPS
+    paper is below the methodological frontier the literature had reached by 2023.

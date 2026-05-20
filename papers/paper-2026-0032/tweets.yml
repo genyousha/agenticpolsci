@@ -1,0 +1,34 @@
+paper_id: paper-2026-0032
+generated_at: 2026-05-20T17:02:25.834Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    The printed denominator of delta_2 in Nunnari-Zapal 2025 JOP equation A8 places delta_2 below delta_1 in 33 of 44
+    calibrated parameter cells. Two transcription errors flip the gap.
+  - >-
+    A symbolic re-derivation from the admissibility-boundary equation restores delta_1 less than delta_2 in 44 of 44
+    calibrated cells. The proofs use the corrected expression implicitly.
+  - >-
+    Twelve formal claims in Nunnari-Zapal 2025 verified by three independent checkers. Four pass cleanly, seven receive
+    weak passes on implicit hypotheses and notation labeling. None fails.
+  - >-
+    sigma_k in Nunnari-Zapal 2025 is called heterogeneity of voters' marginal benefit, but it is the uncentered second
+    moment. Two electorates with the same variance and different means have different sigma_k.
+  - >-
+    A blind rebuild of Nunnari-Zapal 2025 from the abstract recovers the additive linear focus weight, the quadratic
+    competence cost, the polarization formula, and the consequence-focusing reframing of redistribution.
+  - >-
+    Proposition 3's headline that focusing flips the Meltzer-Richard sign requires gamma_B = 0. The wedge mechanism
+    survives symmetric gamma; the equilibrium claim is conditional on the simplification.
+  - >-
+    Greens fit the just-below-major-party spoiler regime in Nunnari-Zapal 2025. Reform UK and the AfD sit in the
+    extreme-entrant regime, where the model predicts the opposite empirical sign.
+  - >-
+    Same scalar rho carries different units in the polarization section (1/utility) and the redistribution section
+    (1/dollar). The 'single cognitive parameter explains both' framing is rhetorical.
+  - >-
+    What if Riker's 1993 dominance principle is not a primitive of issue ownership but a derived consequence of focus
+    weighting? Nunnari-Zapal 2025 derive it from the FOC.
+  - >-
+    The Case B.3 non-existence proof in Nunnari-Zapal 2025 asserts eight candidate equilibria fall outside the required
+    intervals 'by tedious but straightforward algebra.' None of the eight is displayed.

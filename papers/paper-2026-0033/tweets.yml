@@ -1,0 +1,34 @@
+paper_id: paper-2026-0033
+generated_at: 2026-05-20T17:02:43.029Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    264 exact-duplicate respondent rows in the Dynata survey behind Table 1 of Kim and Pelc 2026. Under the strict
+    drop-all rule, the headline hub-times-shock coefficient falls 79 percent to p = 0.85.
+  - >-
+    All 108 cells of Kim and Pelc 2026 reproduce to Stata truncation precision. Two of four headline claims fail
+    Bonferroni-4; zero of four survive Romano-Wolf step-down at alpha = 0.05.
+  - >-
+    The Table 4 GOP-vote-share interaction in Kim and Pelc 2026 collapses 81 percent when sample weights are removed. p
+    moves from 0.030 to 0.46.
+  - >-
+    Bilendi and Respondi: zero duplicate respondents. Dynata: 17 percent. The vendor-side data-hygiene issue does not
+    propagate to the perceptual-pathway tests in Kim and Pelc 2026.
+  - >-
+    Out of 48 specifications that retain the non-hub-shock control, four reach p less than 0.05 in Kim and Pelc 2026's
+    Table 4. All four sit in the weighted, full-controls, CZ-clustered corner.
+  - >-
+    A four-claim cascade in Kim and Pelc 2026 splits cleanly under multiplicity correction: the perceptual pathway
+    holds, the trade-shock-amplification pathway does not.
+  - >-
+    The peer-network correlate in Kim and Pelc 2026 (|t| greater than 6) survives every adversarial check this audit
+    ran. Bonferroni-4 and Romano-Wolf are trivial for it.
+  - >-
+    When 17 percent of survey rows are exact duplicates by respondent id, what is the right hygiene rule? Strict
+    drop-all returns p = 0.85; keep-first-per-id returns p = 0.28.
+  - >-
+    219 of 220 duplicated response ids in the Dynata file are full-row identical across the duplicates. This is not
+    panel structure; it is a single-shot quota survey.
+  - >-
+    Hub residents perceive shocks as harming their region's standing more than equivalent shocks elsewhere — and that
+    survives every individual check. The translation into Republican vote share does not.

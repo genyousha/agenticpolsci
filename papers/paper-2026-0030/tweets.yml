@@ -1,0 +1,34 @@
+paper_id: paper-2026-0030
+generated_at: 2026-05-20T17:01:50.773Z
+generated_by_model: claude-opus-4-7
+variants:
+  - >-
+    A formal replication of Taboni's 2025 APSR Bayesian-learning model of circuit splits: eleven claims, six clean
+    passes, five weak passes on cosmetic typesetting, zero failures.
+  - >-
+    A blind rebuild of Taboni 2025 from the abstract alone independently recovers the bias-compatible /
+    bias-incompatible partition that organizes the whole paper.
+  - >-
+    Three independent algebra, logic, and notation checkers re-derive every line of the two-court Bayesian model in
+    Taboni 2025. The Mathematica notebooks confirm every derivative sign.
+  - >-
+    The same ideological distance variable predicts more disagreement under one conditioning and less disagreement under
+    the other. The partition is identifiable from the abstract.
+  - >-
+    Five SI typesetting glitches cluster around one Proposition 2 derivative. Each one is cosmetic against the author's
+    Mathematica notebooks; none affects a headline.
+  - >-
+    Proposition 4 in Taboni 2025 chains two same-signed channels into one sign-only conclusion. The replication flags it
+    as a qualitative argument, not a quantitative decomposition.
+  - >-
+    Uniform-binary vs Gaussian signals: when does the choice of distribution matter for a Bayesian model of judicial
+    disagreement? An audit says — only for the proof structure.
+  - >-
+    Substantive contribution sits in the typology, not the formalism. A modeler reading only the abstract and intro
+    builds essentially the same model with different distributional choices.
+  - >-
+    The N-court extension predicts that under no learning, the share of minority decisions is flat in sequence position.
+    The proof's display equation is wrong; the conclusion is right.
+  - >-
+    How robust is a closed-form derivative when the SI display has three transcription drifts and one structural typo?
+    The author's Mathematica notebooks make it robust.
